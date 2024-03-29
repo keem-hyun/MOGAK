@@ -16,11 +16,11 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     struct ModalartInfo {
         var ModalartTitle: String
         var ModalartId: Int
-        //var ModalartColor : String
+        var ModalartColor : String
     }
-
-    var ModalClosure : (() -> (Void))?
     
+    static let identifier = "vc2"
+
     //MARK: - 기본 프로퍼티
     
     private lazy var mainLabel: UIButton = {
@@ -97,7 +97,7 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
                 if let ModalartArray = data {
                     self.modalartList = ModalartArray
                     self.ModalartData = ModalartArray.map { Modalart in
-                        return ModalartInfo(ModalartTitle: Modalart.title, ModalartId: Modalart.id)
+                        return ModalartInfo(ModalartTitle: Modalart.title, ModalartId: Modalart.id, ModalartColor: Modalart.color)
                     }
                     self.ModalartTableView.reloadData()
                 }
@@ -128,7 +128,8 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(ModalartData[indexPath.section])
         
-        ModalClosure?()
+         let vc = SelectJogakModal()    
+        self.navigationController?.pushViewController(vc, animated: true)
         
     }
     
@@ -206,7 +207,14 @@ class SelectModalartTableViewCell: UITableViewCell {
     func configureModalart(with ModalartData: SelectModalartTableView.ModalartInfo) {
         
         ModalartLabel.text = ModalartData.ModalartTitle
-        ModalartLabel.textColor = DesignSystemColor.signature.value
-        ModalartLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
+        
+        if ModalartData.ModalartColor.isEmpty{
+            ModalartLabel.textColor = DesignSystemColor.signature.value
+            ModalartLabel.backgroundColor = DesignSystemColor.signature.value.withAlphaComponent(0.1)
+        }else{
+            ModalartLabel.backgroundColor = UIColor(hex: ModalartData.ModalartColor ).withAlphaComponent(0.1)
+            ModalartLabel.textColor = UIColor(hex: ModalartData.ModalartColor)
+            
+        }
     }
 }

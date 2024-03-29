@@ -84,7 +84,6 @@ class ApiNetwork{
                 switch response.result {
                 case .success(let jogakDailyResponse):
                     completionHandler(.success([jogakDailyResponse]))
-                    //print("ApiNetwork.swift에서 success뜸", jogakDailyResponse.result)
                 case .failure(let error):
                     completionHandler(.failure(error))
                 }

@@ -11,6 +11,9 @@ import Then
 
 class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
     
+    //MARK: - 조각 정보
+    var jogakData: [ScheduleJogakDetail] = []
+    let Apinetwork =  ApiNetwork.shared
     //MARK: - properties
     
     lazy var cellImage : UIImageView = {
@@ -37,6 +40,8 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         return cellButton
     }()
     
+    var jogakId = Int()
+    
     lazy var recodelabel: UILabel? = {
         let label = UILabel()
         label.numberOfLines = 4
@@ -51,6 +56,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }()
     
     let selectJogakModal = SelectJogakModal()
+    let scheduleVC = ScheduleStartViewController()
     var isRoutine = Bool()
     
 //MARK: - @objc
@@ -65,11 +71,11 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         setroutine.modalPresentationStyle = .formSheet
         desetroutine.modalPresentationStyle = .formSheet
         
-        //if cellImage.image == UIImage(named: "emptySquareCheckmark"){
         if isRoutine == false{
             parentViewController.present(desetroutine,animated: true)
         
             desetroutine.jogaktitleLabel.text = cellLabel.text
+            
             
             if let desetsheet = desetroutine.sheetPresentationController{
                 if #available(iOS 16.0, *) {
@@ -83,11 +89,14 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 
             }
 //MARK: - 루틴으로 지정되지 않은 조각
-
             desetroutine.pushClosure = {
                 let vc = JogakEditViewController()
                         parentViewController.navigationController?.pushViewController(vc, animated: true)
+                vc.currentJogakId = self.jogakId
+
+                print("데이터 이동 확인", vc.currentJogakId)
             }
+            
         }else{
             parentViewController.present(setroutine,animated: true)
             
@@ -193,6 +202,21 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 
         return labelSize.height
     }
+    
+    //MARK: - 조각 수정을 위한 API
+    func getDetailJogakData(id : Int, DailyDate : String){
+        Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
+            switch result{
+            case.success(let data):
+                print(data as Any)
+            case.failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    
+    
 
 }
 

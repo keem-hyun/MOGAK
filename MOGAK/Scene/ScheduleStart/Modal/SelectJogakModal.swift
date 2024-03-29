@@ -35,6 +35,7 @@ class SelectJogakModal : UIViewController{
     
     let DidDismissModal: Notification.Name = Notification.Name("DidDismissModal")
     
+    static let identifier = "SelectJogakModal"
     
     
     //MARK: - Basic Properties
@@ -179,7 +180,7 @@ class SelectJogakModal : UIViewController{
                 guard let modalartList = list else { return }
                 
                 self.modalartList = modalartList.map { modalart in
-                    return ScheduleModalartList(id: modalart.id, title: modalart.title)
+                    return ScheduleModalartList(id: modalart.id, title: modalart.title, color: modalart.color)
                 }
                 
                 self.modalartTitles = self.modalartList.map { $0.title }

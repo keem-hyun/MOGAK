@@ -17,11 +17,12 @@ struct result: Codable {
     let dailyJogaks: [DailyJogak]
 }
 struct DailyJogak: Codable {
-    let dailyJogakID: Int
+    let jogakID,dailyJogakID: Int
     let mogakTitle, category, title: String
     let isRoutine, isAchievement: Bool
 
     enum CodingKeys: String, CodingKey {
+        case jogakID = "jogakId"
         case dailyJogakID = "dailyJogakId"
         case mogakTitle, category, title, isRoutine, isAchievement
     }

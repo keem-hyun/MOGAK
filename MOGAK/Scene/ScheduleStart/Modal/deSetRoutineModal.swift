@@ -50,6 +50,7 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
         return keepGoButton
     }()
     
+    
     let CellVC = ScheduleTableViewCell()
     
     //MARK: - viewDidLoad
@@ -100,7 +101,6 @@ class deSetRoutineModal : UIViewController,UISheetPresentationControllerDelegate
     
     func Closurefunc(){
         guard let pushClosure = self.pushClosure else { return }
-        //이걸 modal을 부르는 곳에서 데이터를 pushClosure을 부른다
         pushClosure()
     }
     
