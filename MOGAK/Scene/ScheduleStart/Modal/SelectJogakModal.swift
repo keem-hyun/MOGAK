@@ -35,9 +35,6 @@ class SelectJogakModal : UIViewController{
     
     let DidDismissModal: Notification.Name = Notification.Name("DidDismissModal")
     
-    static let identifier = "SelectJogakModal"
-    
-    
     //MARK: - Basic Properties
     
     private lazy var contentView : UIView = {
@@ -46,9 +43,9 @@ class SelectJogakModal : UIViewController{
         return view
     }()
     
-    private lazy var mainLabel : UIButton = {
+     lazy var mainLabel : UIButton = {
         let btn = UIButton()
-        btn.setTitle("내 모다라트", for: .normal)
+        //btn.setTitle("내 모다라트", for: .normal)
         btn.titleLabel?.font = DesignSystemFont.semibold20L140.value
         btn.setTitleColor(.black, for: .normal)
         btn.isUserInteractionEnabled = true

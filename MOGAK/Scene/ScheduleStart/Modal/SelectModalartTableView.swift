@@ -126,10 +126,12 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(ModalartData[indexPath.section])
+        print(ModalartData[indexPath.section].ModalartId)
         
-         let vc = SelectJogakModal()    
+        let vc = SelectJogakModal()
         self.navigationController?.pushViewController(vc, animated: true)
+        vc.getDetailMogakData(id: ModalartData[indexPath.section].ModalartId)
+        vc.mainLabel.setTitle(ModalartData[indexPath.section].ModalartTitle, for: .normal) 
         
     }
     

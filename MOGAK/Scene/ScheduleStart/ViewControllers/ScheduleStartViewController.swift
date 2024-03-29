@@ -519,7 +519,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     //    }
     
     @objc func goStart(_ sender : UIButton){
-        #warning("여기 바꿔야댐")
         let vc = SelectModalartTableView()
         
         let navigationController = UINavigationController(rootViewController: vc)
