@@ -424,85 +424,121 @@ extension MyPageViewController {
         
         ///푸시알림
         pushView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.profileView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         }
 
         pushLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(self.pushView.snp.trailing).offset(0)
         }
         
         ///공지사항
         notiView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.pushView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
+            
         }
         
         notiLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(self.notiView.snp.trailing).offset(0)
         }
 
         ///문의사항
         askView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.notiView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         }
         
         askLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(askView.snp.trailing).offset(0)
         }
         
         ///이용약관
         permView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.askView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         }
         
         permLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(permView.snp.trailing).offset(0)
         }
         
         ///개인정보처리방침
         privacyView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.permView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         }
         
         privacyLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(privacyView.snp.trailing).offset(0)
         }
         
         ///위치정보 동의설정
         gpsView.snp.makeConstraints({ make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.privacyView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         })
         
         gpsLeftArrow.snp.makeConstraints { make in
             make.height.equalTo(16)
+            make.trailing.equalTo(gpsView.snp.trailing).offset(0)
         }
         
         ///버전정보
         versionLabel.snp.makeConstraints({
             $0.top.equalTo(self.gpsView.snp.bottom).offset(32)
-            $0.leading.equalToSuperview().offset(30)
+            $0.leading.equalToSuperview().offset(20)
         })
         
         versionNumberLabel.snp.makeConstraints({
             $0.centerY.equalTo(self.versionLabel.snp.centerY)
-            $0.trailing.equalToSuperview().offset(-30)
+            $0.trailing.equalToSuperview().offset(-20)
         })
+    }
+}
+
+import SwiftUI
+
+struct Preview7: UIViewControllerRepresentable {
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        MyPageViewController()
+    }
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct ViewController_PreviewProvider7: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview7()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+        }
     }
 }

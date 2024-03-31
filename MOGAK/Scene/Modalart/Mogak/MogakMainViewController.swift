@@ -214,7 +214,7 @@ extension MogakMainViewController {
         }
     }
     
-    //MARK: - 모각데이터 가져오기
+    //MARK: - 모각데이터 가져오기(즉, 하나의 모다라트에 있는 모각들을 의미함)
     func getDetailMogakData() {
         self.view.isUserInteractionEnabled = false
         modalartNetwork.getDetailMogakData(modalartId: self.modalartId) { result in
@@ -356,6 +356,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     bottomSheetVC.startDeleteJogak = {
                         self.showAskDeleteModal(false)
                     }
+                    bottomSheetVC.delegate = self
                     self.present(bottomSheetVC, animated: true)
                     
                 } else {
@@ -514,4 +515,44 @@ extension MogakMainViewController: JogakCreatedReloadDelegate {
         print("Delegate 과연???")
         self.getMogakDetail(self.selectedMogak)
     }
+}
+
+extension MogakMainViewController: MogakCreatedReloadDelegate{
+    func reloadModalart() {
+        self.getDetailMogakData()
+    }
+}
+
+extension MogakMainViewController: MogakSettingButtonTappedDelegate {
+    func cellButtonTapped(mogakData: DetailMogakData) {
+        let mogakEditVC = MogakEditViewController()
+        // 타이틀 넘기기
+        mogakEditVC.mogakTextField.text = mogakData.title
+        
+        // 카테고리 넘기기
+        let category = mogakData.bigCategory.name
+        let categoryList = mogakEditVC.categoryList
+        let categoryIndex = categoryList.firstIndex(of: category)!
+        print("categoryIndex: \(categoryIndex)")
+        
+        mogakEditVC.currentMogakId = mogakData.mogakId
+        mogakEditVC.currentBigCategory = mogakData.bigCategory.name
+        mogakEditVC.currentColor = String(mogakData.color!.suffix(6))
+        //mogakEditVC.categoryCollectionView.selectItem(at: [0, categoryIndex], animated: false, scrollPosition: .init())
+        
+        // 컬러 넘기기
+        let color = mogakData.color
+        print(color!)
+        let colorPalette = mogakEditVC.titleColorPalette
+//        let colorIndex = colorPalette.firstIndex(of: color!)!
+//        print(#fileID, #function, #line, "- mogakData Color: \(String(describing: mogakData.color))")
+//        mogakEditVC.colorCollectionView.selectItem(at: [0, colorIndex], animated: false, scrollPosition: .init())
+        if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
+            print("#########3")
+        }
+        mogakEditVC.delegate = self
+        self.navigationController?.pushViewController(mogakEditVC, animated: true)
+    }
+    
+    
 }

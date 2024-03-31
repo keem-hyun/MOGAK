@@ -92,8 +92,10 @@ class MogakMainBottomModalViewController: UIViewController {
     //MARK: - 모각 수정
     @objc func editBtnTapped() {
         print(#fileID, #function, #line, "- 네 버튼 클릭")
-    
         self.dismiss(animated: true)
+        print(#fileID, #function, #line, "- delegate:\(delegate)")
+        delegate?.cellButtonTapped(mogakData: self.selectedMogak)
+        
     }
     
 }
