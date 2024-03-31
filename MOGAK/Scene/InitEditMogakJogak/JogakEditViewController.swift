@@ -1027,6 +1027,7 @@ extension JogakEditViewController {
 extension JogakEditViewController {
     // 조각 수정
     func editJogak() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let jogakId = currentJogakId
         //let jogakId = 18
@@ -1058,14 +1059,17 @@ extension JogakEditViewController {
         
         mogakNetwork.editJogak(data: data, jogakId: jogakId) {
             result in
+            
             switch result {
             case .success(let message):
                 print(#fileID, #function, #line, "- jogakMainData: \(message)")
                 self.delegate?.reloadMogak()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    LoadingIndicator.hideLoading()
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }

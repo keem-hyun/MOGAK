@@ -1427,6 +1427,7 @@ extension MogakInitViewController {
     // 모각 생성
     // MARK: - 재혁 코드
     func createMogak() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let id = currentModalartId
         //let id = 25
@@ -1452,9 +1453,11 @@ extension MogakInitViewController {
                 self.delegate?.reloadModalart()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
+                    LoadingIndicator.hideLoading()
                 }
                 
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }
