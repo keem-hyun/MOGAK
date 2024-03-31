@@ -68,6 +68,27 @@ struct JogakDailyStart: Codable {
     }
 }
 
+//MARK: - 일일 조각 디테일
+struct DailyJogakDetailResponse: Codable {
+    let time, status, code, message: String
+    let result: [DailyJogakDetail]?
+}
+
+struct DailyJogakDetail: Codable {
+    let jogakID: Int
+    let mogakTitle, category, title: String
+    let isRoutine: Bool
+    let days: [String]?
+    let achievements: Int
+    let startDate, endDate: String
+
+    enum CodingKeys: String, CodingKey {
+        case jogakID = "jogakId"
+        case mogakTitle, category, title, isRoutine, days, achievements, startDate, endDate
+    }
+}
+
+
 //MARK: - 조각 실패
 struct JogakFail: Codable {
     let time, status, code, message: String?

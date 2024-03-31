@@ -92,9 +92,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             desetroutine.pushClosure = {
                 let vc = JogakEditViewController()
                         parentViewController.navigationController?.pushViewController(vc, animated: true)
-                vc.currentJogakId = self.jogakId
-
-                print("데이터 이동 확인", vc.currentJogakId)
+                
             }
             
         }else{
@@ -204,16 +202,16 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }
     
     //MARK: - 조각 수정을 위한 API
-    func getDetailJogakData(id : Int, DailyDate : String){
-        Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
-            switch result{
-            case.success(let data):
-                print(data as Any)
-            case.failure(let error):
-                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-            }
-        }
-    }
+//    func getDetailJogakData(id : Int, DailyDate : String){
+//        Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
+//            switch result{
+//            case.success(let data):
+//                print(data as Any)
+//            case.failure(let error):
+//                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+//            }
+//        }
+//    }
 
     
     

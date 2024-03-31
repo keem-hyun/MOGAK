@@ -102,6 +102,21 @@ class ApiNetwork{
                 }
             }
     }
+    
+    //MARK: - 일일 조각 디테일 조회
+    func getdailyJogakDetail(jogakId: Int, completionHandler: @escaping(Result<[DailyJogakDetailResponse]?, Error>) -> Void){
+        AF.request(ApiRouter.getdailyJogakDetail(jogakId: jogakId), interceptor: CommonLoginManage())
+            .validate(statusCode: 200..<500)
+            .responseDecodable(of: DailyJogakDetail.self) { response in
+                switch response.result {
+                case .success(let dailyjogakDetail):
+                    print(dailyjogakDetail)
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
+    }
+
     //MARK: - 조각 실패
     func getJogakFail(dailyJogakId : Int, completionHandler : @escaping(Result<[JogakFail]?, Error>)-> Void) {
                 AF.request(ApiRouter.JogakFail(dailyJogakId: dailyJogakId), interceptor: CommonLoginManage())
