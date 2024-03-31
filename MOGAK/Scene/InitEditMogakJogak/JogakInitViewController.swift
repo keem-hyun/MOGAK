@@ -961,6 +961,7 @@ extension JogakInitViewController {
 extension JogakInitViewController {
     // 조각 생성
     func createJogak() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let mogakId = currentMogakId
         //let mogakId = 14
@@ -1002,11 +1003,13 @@ extension JogakInitViewController {
             switch result {
             case .success(let jogakMainData):
                 print(#fileID, #function, #line, "- jogakMainData: \(jogakMainData)")
+                LoadingIndicator.hideLoading()
                 self.delegate?.reloadMogak()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }

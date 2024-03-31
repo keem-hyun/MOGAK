@@ -182,6 +182,7 @@ extension MogakMainViewController {
     //MARK: - 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
         ///유저 액션 막기
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let jogakDate = Date().jogakTodayDateToString()
         mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: jogakDate) { result in
@@ -192,7 +193,9 @@ extension MogakMainViewController {
                 guard let jogakList = jogakList else { return }
                 self.jogakList = jogakList
                 self.mogakMandalartCollectionView.reloadData()
+                LoadingIndicator.hideLoading()
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }
@@ -200,9 +203,11 @@ extension MogakMainViewController {
     
     //MARK: - 모각 삭제
     func deleteMogak() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteMogak(mogakId: selectedMogak.mogakId) { result in
             self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let responseResult):
                 if responseResult {
@@ -216,9 +221,11 @@ extension MogakMainViewController {
     
     //MARK: - 모각데이터 가져오기(즉, 하나의 모다라트에 있는 모각들을 의미함)
     func getDetailMogakData() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         modalartNetwork.getDetailMogakData(modalartId: self.modalartId) { result in
             self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let data):
                 self.mogakList = data?.result?.mogaks ?? []
@@ -244,8 +251,10 @@ extension MogakMainViewController {
     
     //MARK: - 조각 삭제
     func deleteJogak(_ jogakId: Int) {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteJogak(jogakId: jogakId) { result in
+            LoadingIndicator.hideLoading()
             self.view.isUserInteractionEnabled = true
             switch result {
             case .success(_):
