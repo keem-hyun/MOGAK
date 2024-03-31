@@ -104,13 +104,13 @@ class ApiNetwork{
     }
     
     //MARK: - 일일 조각 디테일 조회
-    func getdailyJogakDetail(jogakId: Int, completionHandler: @escaping(Result<[DailyJogakDetailResponse]?, Error>) -> Void){
+    func getdailyJogakDetail(jogakId: Int, completionHandler: @escaping(Result<DailyJogakDetail?, Error>) -> Void){
         AF.request(ApiRouter.getdailyJogakDetail(jogakId: jogakId), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<500)
             .responseDecodable(of: DailyJogakDetail.self) { response in
                 switch response.result {
-                case .success(let dailyjogakDetail):
-                    print(dailyjogakDetail)
+                case .success(let data):
+                    completionHandler(.success(data))
                 case .failure(let error):
                     completionHandler(.failure(error))
                 }

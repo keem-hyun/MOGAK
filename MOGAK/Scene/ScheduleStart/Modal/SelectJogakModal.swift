@@ -168,11 +168,14 @@ class SelectJogakModal : UIViewController{
     }
     
     //MARK: - 모다라트 리스트 조회
+    
     func getModalart() {
+        LoadingIndicator.showLoading()
         Apinetwork.getModalartList { result in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             case .success(let list):
                 guard let modalartList = list else { return }
                 
@@ -191,6 +194,7 @@ class SelectJogakModal : UIViewController{
                     self.nowShowModalArtIndex = 0
                     self.setupMenu()
                 }
+                LoadingIndicator.hideLoading()
             }
         }
     }
@@ -228,15 +232,18 @@ class SelectJogakModal : UIViewController{
     
     //MARK: - 모다라트 정보
     func getModalartDetailInfo(id: Int) {
+        LoadingIndicator.showLoading()
         Apinetwork.getDetailModalartInfo(modalartId: id) { result in
             switch result {
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                 
             case .success(let modalInfo):
                 guard let modalInfo = modalInfo else { return }
                 self.getDetailMogakData(id: modalInfo.id)
                 print("\(modalInfo.id) 의 id인 모다라트")
+                LoadingIndicator.hideLoading()
                 
             }
             
@@ -245,6 +252,7 @@ class SelectJogakModal : UIViewController{
     }
     //MARK: - 모각 정보
     func getDetailMogakData(id: Int) {
+        LoadingIndicator.showLoading()
         Apinetwork.getDetailMogakData(modalartId: id) { result in
             switch result {
             case .success(let data):
@@ -275,13 +283,16 @@ class SelectJogakModal : UIViewController{
                 } else {
                     
                 }
+                LoadingIndicator.hideLoading()
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 한 모각에 대응하는 조각보기
     func getDetailJogakData(id : Int, DailyDate : String){
+        LoadingIndicator.showLoading()
         Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
             switch result{
             case.success(let data):
@@ -302,21 +313,25 @@ class SelectJogakModal : UIViewController{
                     self.MogakTableView.reloadData()
                     
                 }
-                
+                LoadingIndicator.hideLoading()
             case.failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 일일 조각 시작
     func getAddJogakDaily(jogakId : Int){
+        LoadingIndicator.showLoading()
         Apinetwork.getAddJogakDaily(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
                 print(data as Any)
+                LoadingIndicator.hideLoading()
                 
             case.failure(let error):
                 print(error)
+                LoadingIndicator.hideLoading()
             }
         }
     }

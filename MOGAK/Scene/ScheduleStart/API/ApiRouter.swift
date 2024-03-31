@@ -21,7 +21,7 @@ enum ApiRouter : URLRequestConvertible{
     case JogakSuccess(dailyJogakId : Int)                          //조각 성공
     case JogakFail(dailyJogakId : Int)                       //조각 실패
     case getJogakDailyCheck(DailyDate : String)             //일별 조각 조회
-    case getdailyJogakDetail(jogakId : Int)
+    case getdailyJogakDetail(jogakId : Int)                 //데일리 모각의 정보
     case getAddJogakToday(jogakId : Int)                    //일일 조각 시작
     case getJogakMonth(startDay : String, endDay : String) //주, 월별 조각 조회
 //    case getPost                                            // 회고록 조회
@@ -70,7 +70,7 @@ enum ApiRouter : URLRequestConvertible{
     //어떤 방식(get, post, delete, update)
     var method: HTTPMethod {
         switch self {
-        case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth,.getdailyJogakDetail : return .get
+        case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth, .getdailyJogakDetail : return .get
 //        case .makePost: return .post
         case .getAddJogakToday : return .post
         case .JogakSuccess: return .put
@@ -113,7 +113,7 @@ enum ApiRouter : URLRequestConvertible{
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .getJogakMonth:
             request = try URLEncoding.queryString.encode(request, with: parameters)
-        case .getdailyJogakDetail(jogakId: let jogakId):
+        case .getdailyJogakDetail:
             request = try URLEncoding.queryString.encode(request, with: parameters)
         }
         

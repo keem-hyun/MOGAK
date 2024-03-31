@@ -242,7 +242,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("첫 번째 날: \(firstDay)")
             print("마지막 날: \(lastDay)")
             
-            getJogakMonth(startDay: firstDay, endDay: lastDay)
+//            getJogakMonth(startDay: firstDay, endDay: lastDay)
             
         } else {
             print("날짜를 가져올 수 없습니다.")
@@ -414,6 +414,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
+        LoadingIndicator.showLoading()
         Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
             switch result {
             case .success(let jogakDailyChecks):
@@ -425,9 +426,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                             self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, dailyJogak.jogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
                         }
                         self.ScheduleTableView.reloadData()
+                        LoadingIndicator.hideLoading()
                     }
                 } else {
                     print("일일 조각을 위한 nil 배열 수신.")
+                    LoadingIndicator.hideLoading()
                 }
             case .failure(let error):
                 print("뷰컨에서 failure",error)
@@ -438,39 +441,41 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }
     //MARK: - 조각 실패 API
     func CheckJogakFail(dailyJogakId : Int){
+        LoadingIndicator.showLoading()
         Apinetwork.getJogakFail(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                return //print(jogakfail as Any)
+                LoadingIndicator.hideLoading()
             case.failure(let error):
-                print("jogakFail error",error)
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 조각 성공 API
     func CheckJogakSuccess(dailyJogakId : Int){
+        LoadingIndicator.showLoading()
         Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                return //print(jogakSuccess as Any)
+                LoadingIndicator.hideLoading()
             case.failure(let error):
-                print("jogakFail error",error)
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 월간 조각 조회
-    func getJogakMonth(startDay : String, endDay : String){
-        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
-            switch result{
-            case.success(let jogakMonth):
-                //let jogakResult = jogakMonth.result
-                print(jogakMonth)
-            case.failure(let error):
-                print("jogakMonthFail",error)
-            }
-            
-        }
-    }
+//    func getJogakMonth(startDay : String, endDay : String){
+//        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
+//            switch result{
+//            case.success(let jogakMonth):
+//                //let jogakResult = jogakMonth.result
+//                print(jogakMonth)
+//            case.failure(let error):
+//                print("jogakMonthFail",error)
+//            }
+//            
+//        }
+//    }
     
     //MARK: - @objc func
     @objc func tapToggleButton(){

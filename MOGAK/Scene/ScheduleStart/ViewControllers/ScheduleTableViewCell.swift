@@ -12,8 +12,10 @@ import Then
 class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
     
     //MARK: - 조각 정보
+    
     var jogakData: [ScheduleJogakDetail] = []
     let Apinetwork =  ApiNetwork.shared
+    
     //MARK: - properties
     
     lazy var cellImage : UIImageView = {
@@ -58,18 +60,22 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     let selectJogakModal = SelectJogakModal()
     let scheduleVC = ScheduleStartViewController()
     var isRoutine = Bool()
+    let editVC = JogakEditViewController()
     
 //MARK: - @objc
     @objc func ButtonClicked(){
         guard let parentViewController = self.parentVC else {
             return
         }
+        print(jogakId)
+        getDailyJogakDetail(JogakId: jogakId)
         
         let setroutine = SetRoutineModal()
         let desetroutine = deSetRoutineModal()
         
         setroutine.modalPresentationStyle = .formSheet
         desetroutine.modalPresentationStyle = .formSheet
+        
         
         if isRoutine == false{
             parentViewController.present(desetroutine,animated: true)
@@ -89,9 +95,12 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 
             }
 //MARK: - 루틴으로 지정되지 않은 조각
-            desetroutine.pushClosure = {
+            desetroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
                         parentViewController.navigationController?.pushViewController(vc, animated: true)
+                vc.currentJogakId = (editjogak?.jogakID)!
+                vc.jogakDetailTextField.text = editjogak?.title
+                vc.mogakCategoryLabel.text = editjogak?.category
                 
             }
             
@@ -111,10 +120,13 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 
             }
 //MARK: - 루틴으로 지정된 조각
-            setroutine.pushClosure = {
+            setroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
                         parentViewController.navigationController?.pushViewController(vc, animated: true)
-                print(setroutine.jogaktitleLabel,setroutine.subtitleLabel)
+                vc.currentJogakId = (editjogak?.jogakID)!
+                vc.jogakDetailTextField.text = editjogak?.title
+                vc.mogakCategoryLabel.text = editjogak?.category
+                vc.toggleButton.isOn = ((editjogak?.isRoutine) != nil)
             }
         }
     }
@@ -202,19 +214,23 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }
     
     //MARK: - 조각 수정을 위한 API
-//    func getDetailJogakData(id : Int, DailyDate : String){
-//        Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
-//            switch result{
-//            case.success(let data):
-//                print(data as Any)
-//            case.failure(let error):
-//                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
-//            }
-//        }
-//    }
+    
+    var editjogak: DailyJogakDetailResponse?
+    
+    func getDailyJogakDetail(JogakId : Int){
+        LoadingIndicator.showLoading()
+        Apinetwork.getdailyJogakDetail(jogakId: jogakId){ result in
+            switch result{
+            case.success(let data):
+                self.editjogak = data?.result
+                LoadingIndicator.hideLoading()
+            case.failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
+            }
+        }
+    }
 
-    
-    
 
 }
 

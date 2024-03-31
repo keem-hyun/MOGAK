@@ -29,7 +29,7 @@ class JogakEditViewController: UIViewController {
         return Date()
     }()
     
-    private var endDate: String = ""
+     var endDate: String = ""
     
     private var repeatSelectedList : [String] = []
     private var collectionViewHeightConstraint: NSLayoutConstraint!
@@ -65,6 +65,9 @@ class JogakEditViewController: UIViewController {
     private let contentView = DismissKeyboardView().then {
         $0.backgroundColor = .white
     }
+    
+    let Apinetwork = ApiNetwork.shared
+    var jogakId = Int()
     
     // MARK: - 모각 카테고리
     private let mogakCategoryTitleLabel : UILabel = {
@@ -133,7 +136,7 @@ class JogakEditViewController: UIViewController {
         $0.textColor = UIColor(hex: "6E707B")
     }
     
-    private lazy var toggleButton = UISwitch().then {
+     lazy var toggleButton = UISwitch().then {
         $0.isOn = false
         $0.addTarget(self, action: #selector(toggleSwitchChanged(_:)), for: .valueChanged)
     }
@@ -759,7 +762,7 @@ extension JogakEditViewController {
         return dateString
     }
     
-    private func datesRange(from startDate: Date, to endDate: Date) -> [Date] {
+     func datesRange(from startDate: Date, to endDate: Date) -> [Date] {
         // 여기에 startDate부터 endDate까지의 날짜 배열을 생성하는 로직을 추가하세요.
         // 예를 들어, DateComponents를 사용하여 날짜 간격을 계산하고 배열을 만들 수 있습니다.
         var dates: [Date] = []
@@ -1028,6 +1031,7 @@ extension JogakEditViewController {
 // MARK: - 통신 코드
 
 extension JogakEditViewController {
+    
     // 조각 수정
     func editJogak() {
         LoadingIndicator.showLoading()

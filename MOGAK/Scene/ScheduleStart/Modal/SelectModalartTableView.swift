@@ -86,12 +86,13 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     }
     
     //MARK: - 모다라트 리스트 조회
-    
     func getModalart() {
+        LoadingIndicator.showLoading()
         Apinetwork.getModalartList { result in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             case .success(let data):
                 print(data as Any)
                 if let ModalartArray = data {
@@ -101,6 +102,7 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
                     }
                     self.ModalartTableView.reloadData()
                 }
+                LoadingIndicator.hideLoading()
             }
         }
     }

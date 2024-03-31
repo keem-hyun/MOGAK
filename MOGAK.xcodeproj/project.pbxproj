@@ -313,7 +313,6 @@
 		D16D542B2B380FD600CAC0E1 /* ScheduleModalartModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleModalartModel.swift; sourceTree = "<group>"; };
 		D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectJogakModal.swift; sourceTree = "<group>"; };
 		D1A8EC142AD56F0F00FE1648 /* GalleryCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GalleryCollectionViewCell.swift; sourceTree = "<group>"; };
-		D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MogakTableViewCell.swift; sourceTree = "<group>"; };
 		D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deSetRoutineModal.swift; sourceTree = "<group>"; };
 		D1EB8CEA2B5B95E10022D4A5 /* JogakModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogakModel.swift; sourceTree = "<group>"; };
 		D1EB8CED2B5B9A760022D4A5 /* ApiConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiConstants.swift; sourceTree = "<group>"; };
@@ -567,7 +566,6 @@
 				6C7F95D62A928B6B00255ED1 /* SetRoutineModal.swift */,
 				6CFDCACC2A89491F00A7A73C /* CertificationModalVC.swift */,
 				D1826F812AEFF4B300A755D4 /* SelectJogakModal.swift */,
-				D1D10D7B2AF9173A0039A00C /* MogakTableViewCell.swift */,
 				D1187A6F2B132D2400589718 /* PaddingLabel.swift */,
 				D1E43CEE2B24C8D000058C8C /* deSetRoutineModal.swift */,
 				D132F86C2BA588C800CCD54A /* SelectModalartTableView.swift */,
