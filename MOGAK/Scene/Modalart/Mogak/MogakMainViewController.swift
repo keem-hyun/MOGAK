@@ -182,6 +182,7 @@ extension MogakMainViewController {
     //MARK: - 선택한 모각의 모든 조각들 가져오기
     func getMogakDetail(_ mogakData: DetailMogakData) {
         ///유저 액션 막기
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let jogakDate = Date().jogakTodayDateToString()
         mogakNetwork.getAllMogakDetailJogaks(mogakId: mogakData.mogakId, date: jogakDate) { result in
@@ -192,7 +193,9 @@ extension MogakMainViewController {
                 guard let jogakList = jogakList else { return }
                 self.jogakList = jogakList
                 self.mogakMandalartCollectionView.reloadData()
+                LoadingIndicator.hideLoading()
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }
@@ -200,9 +203,11 @@ extension MogakMainViewController {
     
     //MARK: - 모각 삭제
     func deleteMogak() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteMogak(mogakId: selectedMogak.mogakId) { result in
             self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let responseResult):
                 if responseResult {
@@ -214,11 +219,13 @@ extension MogakMainViewController {
         }
     }
     
-    //MARK: - 모각데이터 가져오기
+    //MARK: - 모각데이터 가져오기(즉, 하나의 모다라트에 있는 모각들을 의미함)
     func getDetailMogakData() {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         modalartNetwork.getDetailMogakData(modalartId: self.modalartId) { result in
             self.view.isUserInteractionEnabled = true
+            LoadingIndicator.hideLoading()
             switch result {
             case .success(let data):
                 self.mogakList = data?.result?.mogaks ?? []
@@ -244,8 +251,10 @@ extension MogakMainViewController {
     
     //MARK: - 조각 삭제
     func deleteJogak(_ jogakId: Int) {
+        LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         mogakNetwork.deleteJogak(jogakId: jogakId) { result in
+            LoadingIndicator.hideLoading()
             self.view.isUserInteractionEnabled = true
             switch result {
             case .success(_):
@@ -332,36 +341,6 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
         }
     }
     
-    @objc func mogakEditBtnTapped() {
-        print(#fileID, #function, #line, "- 중앙 모각 셀 수정 버튼 누름")
-        self.dismiss(animated: true) {
-            let mogakEditVC = MogakEditViewController()
-            // 타이틀 넘기기
-            mogakEditVC.mogakTextField.text = self.selectedMogak.title
-            
-            // 카테고리 넘기기
-            let category = self.selectedMogak.bigCategory.name
-            let categoryList = mogakEditVC.categoryList
-            let categoryIndex = categoryList.firstIndex(of:category)!
-            print("categoryIndex: \(categoryIndex)")
-            
-            mogakEditVC.currentMogakId = self.selectedMogak.mogakId
-            mogakEditVC.currentBigCategory = self.selectedMogak.bigCategory.name
-            mogakEditVC.currentColor = String(self.selectedMogak.color!.suffix(6))
-            
-            // 컬러 넘기기
-            let color = self.selectedMogak.color
-            print(color!)
-            let colorPalette = mogakEditVC.titleColorPalette
-            
-            if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
-                print("##############")
-            }
-            mogakEditVC.delegate2 = self
-            self.navigationController?.pushViewController(mogakEditVC, animated: true)
-        }
-    }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if collectionView == self.mogakMandalartCollectionView {
@@ -373,7 +352,6 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                 if row == 4 {
                     let bottomSheetVC = MogakMainBottomModalViewController()
                     bottomSheetVC.selectedMogak = self.selectedMogak
-                    bottomSheetVC.editBtn.addTarget(self, action: #selector(mogakEditBtnTapped), for: .touchUpInside)
                     if let sheet = bottomSheetVC.sheetPresentationController {
                         if #available(iOS 16, *) {
                             sheet.detents = [.custom() { context in
@@ -387,6 +365,7 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
                     bottomSheetVC.startDeleteJogak = {
                         self.showAskDeleteModal(false)
                     }
+                    bottomSheetVC.delegate = self
                     self.present(bottomSheetVC, animated: true)
                     
                 } else {
@@ -542,8 +521,47 @@ extension MogakMainViewController: UICollectionViewDelegateFlowLayout {
 
 extension MogakMainViewController: JogakCreatedReloadDelegate {
     func reloadMogak() {
-        print("reload Mogak: Delegate 과연???")
-        self.getDetailMogakData()
+        print("Delegate 과연???")
         self.getMogakDetail(self.selectedMogak)
     }
+}
+
+extension MogakMainViewController: MogakCreatedReloadDelegate{
+    func reloadModalart() {
+        self.getDetailMogakData()
+    }
+}
+
+extension MogakMainViewController: MogakSettingButtonTappedDelegate {
+    func cellButtonTapped(mogakData: DetailMogakData) {
+        let mogakEditVC = MogakEditViewController()
+        // 타이틀 넘기기
+        mogakEditVC.mogakTextField.text = mogakData.title
+        
+        // 카테고리 넘기기
+        let category = mogakData.bigCategory.name
+        let categoryList = mogakEditVC.categoryList
+        let categoryIndex = categoryList.firstIndex(of: category)!
+        print("categoryIndex: \(categoryIndex)")
+        
+        mogakEditVC.currentMogakId = mogakData.mogakId
+        mogakEditVC.currentBigCategory = mogakData.bigCategory.name
+        mogakEditVC.currentColor = String(mogakData.color!.suffix(6))
+        //mogakEditVC.categoryCollectionView.selectItem(at: [0, categoryIndex], animated: false, scrollPosition: .init())
+        
+        // 컬러 넘기기
+        let color = mogakData.color
+        print(color!)
+        let colorPalette = mogakEditVC.titleColorPalette
+//        let colorIndex = colorPalette.firstIndex(of: color!)!
+//        print(#fileID, #function, #line, "- mogakData Color: \(String(describing: mogakData.color))")
+//        mogakEditVC.colorCollectionView.selectItem(at: [0, colorIndex], animated: false, scrollPosition: .init())
+        if let colorIndex = colorPalette.firstIndex(of: String(color!.suffix(6))) {
+            print("#########3")
+        }
+        mogakEditVC.delegate = self
+        self.navigationController?.pushViewController(mogakEditVC, animated: true)
+    }
+    
+    
 }

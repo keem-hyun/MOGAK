@@ -86,7 +86,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private lazy var pushLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -102,7 +102,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private lazy var notiLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -118,7 +118,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private lazy var askLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -139,7 +139,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private lazy var permLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -155,7 +155,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private lazy var privacyLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -171,7 +171,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     private let gpsLeftArrow = UIImageView().then {
         $0.image = UIImage(systemName: "chevron.right")
-        $0.contentMode = .scaleAspectFill
+        $0.contentMode = .scaleAspectFit
         $0.image = $0.image?.withRenderingMode(.alwaysTemplate)
         $0.tintColor = UIColor(hex: "24252E")
     }
@@ -277,14 +277,19 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
         
         self.pushView.addArrangedSubview(pushLabel)
         self.pushView.addArrangedSubview(pushLeftArrow)
+        
         self.notiView.addArrangedSubview(notiLabel)
         self.notiView.addArrangedSubview(notiLeftArrow)
+        
         self.askView.addArrangedSubview(askLabel)
         self.askView.addArrangedSubview(askLeftArrow)
+        
         self.permView.addArrangedSubview(permLabel)
         self.permView.addArrangedSubview(permLeftArrow)
+        
         self.privacyView.addArrangedSubview(privacyLabel)
         self.privacyView.addArrangedSubview(privacyLeftArrow)
+        
         self.gpsView.addArrangedSubview(gpsLabel)
         self.gpsView.addArrangedSubview(gpsLeftArrow)
     }
@@ -381,6 +386,7 @@ extension MyPageViewController {
         self.profileView.addSubviews(profileImage, name, job, buttonStackView)
         
         [editButton, shareButton].forEach( {buttonStackView.addArrangedSubview($0)} )
+        
         profileView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.equalToSuperview()
@@ -418,66 +424,121 @@ extension MyPageViewController {
         
         ///푸시알림
         pushView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
             make.top.equalTo(self.profileView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         }
 
+        pushLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(self.pushView.snp.trailing).offset(0)
+        }
+        
         ///공지사항
         notiView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.pushLabel.snp.bottom).offset(32)
+            make.top.equalTo(self.pushView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
+            
+        }
+        
+        notiLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(self.notiView.snp.trailing).offset(0)
         }
 
         ///문의사항
         askView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.notiLabel.snp.bottom).offset(32)
+            make.top.equalTo(self.notiView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+        
+        askLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(askView.snp.trailing).offset(0)
         }
         
         ///이용약관
         permView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.askLabel.snp.bottom).offset(32)
+            make.top.equalTo(self.askView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+        
+        permLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(permView.snp.trailing).offset(0)
         }
         
         ///개인정보처리방침
         privacyView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.permLabel.snp.bottom).offset(32)
+            make.top.equalTo(self.permView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+        
+        privacyLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(privacyView.snp.trailing).offset(0)
         }
         
         ///위치정보 동의설정
         gpsView.snp.makeConstraints({ make in
-            make.leading.equalToSuperview().offset(30)
+//            make.leading.equalToSuperview().offset(30)
             make.centerX.equalToSuperview()
-            make.top.equalTo(self.privacyLabel.snp.bottom).offset(32)
+            make.top.equalTo(self.privacyView.snp.bottom).offset(32)
             make.height.equalTo(22)
+            make.trailing.equalToSuperview().offset(-20)
         })
+        
+        gpsLeftArrow.snp.makeConstraints { make in
+            make.height.equalTo(16)
+            make.trailing.equalTo(gpsView.snp.trailing).offset(0)
+        }
         
         ///버전정보
         versionLabel.snp.makeConstraints({
-            $0.top.equalTo(self.gpsLabel.snp.bottom).offset(32)
-            $0.leading.equalToSuperview().offset(30)
+            $0.top.equalTo(self.gpsView.snp.bottom).offset(32)
+            $0.leading.equalToSuperview().offset(20)
         })
         
         versionNumberLabel.snp.makeConstraints({
             $0.centerY.equalTo(self.versionLabel.snp.centerY)
-            $0.trailing.equalToSuperview().offset(-30)
+            $0.trailing.equalToSuperview().offset(-20)
         })
     }
 }
 
-//MARK: - 제스처 설정
-extension MyPageViewController {
+import SwiftUI
+
+struct Preview7: UIViewControllerRepresentable {
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        MyPageViewController()
+    }
     
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct ViewController_PreviewProvider7: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview7()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+        }
+    }
 }

@@ -24,7 +24,7 @@ class MogakInitViewController: UIViewController {
     
     var currentStartDate: String = ""
     var currentEndDate: String = ""
-    var currentColor: String = ""
+    var currentColor: String = "475FFD"
     
     private let titleColorPalette: [String] = ["475FFD", "FF4C77", "F98A08", "11D796", "FF6827", "9C31FF", "21CAFF", "FF2F2F"]
     
@@ -408,6 +408,9 @@ class MogakInitViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
+        
+        colorCollectionView.selectItem(at: [0, titleColorPalette.firstIndex(of: currentColor)!], animated: false, scrollPosition: .init())
+        collectionView(colorCollectionView.self, didSelectItemAt: IndexPath(item: titleColorPalette.firstIndex(of: currentColor)!, section: 0))
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -1424,6 +1427,8 @@ extension MogakInitViewController {
     // 모각 생성
     // MARK: - 재혁 코드
     func createMogak() {
+        LoadingIndicator.showLoading()
+        self.view.isUserInteractionEnabled = false
         let id = currentModalartId
         //let id = 25
         let createdTitle = mogakTextField.text
@@ -1448,9 +1453,11 @@ extension MogakInitViewController {
                 self.delegate?.reloadModalart()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
+                    LoadingIndicator.hideLoading()
                 }
                 
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }

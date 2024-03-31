@@ -13,6 +13,7 @@ import ReusableKit
 import FSCalendar
 import Alamofire
 
+/// 조각 생성 vc
 class JogakInitViewController: UIViewController {
     weak var delegate: JogakCreatedReloadDelegate?
     var currentMogakId: Int = 0
@@ -670,7 +671,7 @@ extension JogakInitViewController: UICollectionViewDelegateFlowLayout {
         }
         let size = label.frame.size
         
-        return CGSize(width: size.width + 37, height: size.height + 32)
+        return CGSize(width: size.width + 37, height: size.height + 30)
     }
 }
 
@@ -960,6 +961,8 @@ extension JogakInitViewController {
 extension JogakInitViewController {
     // 조각 생성
     func createJogak() {
+        LoadingIndicator.showLoading()
+        self.view.isUserInteractionEnabled = false
         let mogakId = currentMogakId
         //let mogakId = 14
         let jogakTitle = self.jogakDetailTextField.text ?? "제목"
@@ -1000,11 +1003,13 @@ extension JogakInitViewController {
             switch result {
             case .success(let jogakMainData):
                 print(#fileID, #function, #line, "- jogakMainData: \(jogakMainData)")
+                LoadingIndicator.hideLoading()
                 self.delegate?.reloadMogak()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.navigationController?.popViewController(animated: true)
                 }
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
             }
         }
