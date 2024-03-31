@@ -18,8 +18,6 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
         var ModalartId: Int
         var ModalartColor : String
     }
-    
-    static let identifier = "vc2"
 
     //MARK: - 기본 프로퍼티
     
@@ -49,6 +47,8 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        self.navigationController?.navigationBar.tintColor = .black
+        self.navigationController?.navigationBar.topItem?.title = ""
         SetUI()
         tableUI()
         getModalart()
