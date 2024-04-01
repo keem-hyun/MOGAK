@@ -95,6 +95,8 @@ class ModalartNetwork {
           }
     }
     
+    
+    
     func editModalart(data: ModalartMainData, completionHandler: @escaping(Result<ModalartMainData, Error>) -> Void) {
         AF.request(ModalartRouter.editModalart(data: data), interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.editModalart(data: data))
