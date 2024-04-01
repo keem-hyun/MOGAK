@@ -97,11 +97,14 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 //MARK: - 루틴으로 지정되지 않은 조각
             desetroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
-                        parentViewController.navigationController?.pushViewController(vc, animated: true)
-                vc.currentJogakId = (editjogak?.jogakID)!
-                vc.jogakDetailTextField.text = editjogak?.title
-                vc.mogakCategoryLabel.text = editjogak?.category
                 
+                if let editJogak = self.editjogak {
+                    vc.currentJogak = editJogak
+                    vc.jogakDetailTextField.text = editJogak.title
+                    vc.currentJogakId = self.jogakId
+                    }
+                
+                parentViewController.navigationController?.pushViewController(vc, animated: true)
             }
             
         }else{
@@ -122,11 +125,14 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 //MARK: - 루틴으로 지정된 조각
             setroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
-                        parentViewController.navigationController?.pushViewController(vc, animated: true)
-                vc.currentJogakId = (editjogak?.jogakID)!
-                vc.jogakDetailTextField.text = editjogak?.title
-                vc.mogakCategoryLabel.text = editjogak?.category
-                vc.toggleButton.isOn = ((editjogak?.isRoutine) != nil)
+                
+                if let editJogak = self.editjogak {
+                    vc.currentJogak = editJogak
+                    vc.jogakDetailTextField.text = editJogak.title
+                    vc.currentJogakId = self.jogakId
+                    }
+                
+                parentViewController.navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
@@ -215,14 +221,14 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     
     //MARK: - 조각 수정을 위한 API
     
-    var editjogak: DailyJogakDetailResponse?
+    var editjogak: JogakDetail?
     
     func getDailyJogakDetail(JogakId : Int){
         LoadingIndicator.showLoading()
         Apinetwork.getdailyJogakDetail(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
-                self.editjogak = data?.result
+                self.editjogak = JogakDetail(jogakID: data?.result?.jogakID ?? 0, mogakTitle: data?.result?.mogakTitle ?? "" , category: data?.result?.category ?? "", title: data?.result?.title ?? "", isRoutine: data?.result?.isRoutine ?? false, days: data?.result?.days ?? [], startDate: data?.result?.startDate ?? "", endDate: data?.result?.endDate ?? "",isAlreadyAdded: nil, achievements: data?.result?.achievements ?? 0, Color: data?.result?.Color ?? "")
                 LoadingIndicator.hideLoading()
             case.failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")

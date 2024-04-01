@@ -79,13 +79,14 @@ struct DailyJogakDetailResponse: Codable {
     let jogakID: Int?
     let mogakTitle, category, title: String?
     let isRoutine: Bool?
-    let days: String?
+    let days: [String]?
     let achievements: Int?
     let startDate, endDate: String?
+    let Color : String?
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
-        case mogakTitle, category, title, isRoutine, days, achievements, startDate, endDate
+        case mogakTitle, category, title, isRoutine, days, achievements, startDate, endDate, Color
     }
 }
 
