@@ -451,7 +451,8 @@ extension MogakMainViewController: UICollectionViewDelegate, UICollectionViewDat
             
         } else if (jogakList.count > row - 1 && row > 4) { //5, 6, 7, 8 row
             if jogakList[row - 1].isRoutine {
-                if let days = jogakList[row - 1].days {
+                guard let days = jogakList[row - 1].daysSetting else { return UICollectionViewCell() }
+                if !days.isEmpty {
                     isRoutineJogakCell.goalRepeatDayLabelText = days.joined(separator: ",")
                 } else {
                     isRoutineJogakCell.goalRepeatDayLabelText = "0회"
