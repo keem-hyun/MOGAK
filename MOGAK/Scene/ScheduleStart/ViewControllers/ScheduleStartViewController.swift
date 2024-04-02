@@ -15,7 +15,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     let Apinetwork =  ApiNetwork.shared
     
-    
     //MARK: - Properties
     
     private lazy var calendarView : FSCalendar = {
@@ -584,16 +583,24 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     #warning("tableviewUI")
     
     func tableUI(){
-        ScheduleTableView.snp.makeConstraints{
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalTo(makeModalArt.snp.bottom).multipliedBy(1.3)
-        }
-        
-        startButton.snp.makeConstraints{
-            $0.top.equalTo(ScheduleTableView.snp.bottom)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(48)
+        if startButton.isHidden == true{ // 오늘이 아닐 경우
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(makeModalArt.snp.bottom).multipliedBy(1.5)
+            }
+        }else{
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(makeModalArt.snp.bottom).multipliedBy(1.3)
+            }
+            
+            startButton.snp.makeConstraints{
+                $0.top.equalTo(ScheduleTableView.snp.bottom)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(48)
+            }
         }
     }
     

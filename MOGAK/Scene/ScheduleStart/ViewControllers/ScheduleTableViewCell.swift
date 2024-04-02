@@ -101,6 +101,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
+                    vc.mogakCategoryLabel.text = editJogak.category
                     vc.currentJogakId = self.jogakId
                     }
                 
@@ -129,7 +130,9 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
+                    vc.mogakCategoryLabel.text = editJogak.category
                     vc.currentJogakId = self.jogakId
+                    
                     }
                 
                 parentViewController.navigationController?.pushViewController(vc, animated: true)
