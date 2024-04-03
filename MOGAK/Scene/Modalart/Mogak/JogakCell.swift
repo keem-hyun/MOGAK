@@ -76,8 +76,10 @@ extension JogakCell {
 //            $0.top.equalTo(goalRepeatDayLabel.snp.bottom).offset(18)
 //            $0.top.equalToSuperview().offset(40)
 //            $0.leading.equalToSuperview().offset(10)
+            $0.leading.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview()
+            
         }
         
 //        goalRepeatDayLabel.snp.makeConstraints {

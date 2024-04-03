@@ -92,6 +92,7 @@ extension IsRoutineJogakCell {
         goalRepeatDayLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(40)
             $0.centerX.equalToSuperview()
+            $0.leading.greaterThanOrEqualToSuperview().offset(10)
 //            $0.leading.equalToSuperview().offset(43)
 //            $0.trailing.lessThanOrEqualToSuperview().offset(-10)
         }
