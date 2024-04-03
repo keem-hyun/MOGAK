@@ -163,7 +163,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday
-        tableUI()
         printFirstAndLastDateOfMonth() // 해당 달의 일 수 를 모두 나타냅니닷
         
     }
@@ -207,7 +206,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday //오늘이 아니면 starButton 히든처리
-        tableUI()
+        
         
         
     }
@@ -243,7 +242,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("첫 번째 날: \(firstDay)")
             print("마지막 날: \(lastDay)")
             
-//            getJogakMonth(startDay: firstDay, endDay: lastDay)
+            //            getJogakMonth(startDay: firstDay, endDay: lastDay)
             
         } else {
             print("날짜를 가져올 수 없습니다.")
@@ -429,6 +428,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                         self.ScheduleTableView.reloadData()
                         LoadingIndicator.hideLoading()
                     }
+                    
                 } else {
                     print("일일 조각을 위한 nil 배열 수신.")
                     LoadingIndicator.hideLoading()
@@ -465,18 +465,18 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
     }
     //MARK: - 월간 조각 조회
-//    func getJogakMonth(startDay : String, endDay : String){
-//        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
-//            switch result{
-//            case.success(let jogakMonth):
-//                //let jogakResult = jogakMonth.result
-//                print(jogakMonth)
-//            case.failure(let error):
-//                print("jogakMonthFail",error)
-//            }
-//            
-//        }
-//    }
+    //    func getJogakMonth(startDay : String, endDay : String){
+    //        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
+    //            switch result{
+    //            case.success(let jogakMonth):
+    //                //let jogakResult = jogakMonth.result
+    //                print(jogakMonth)
+    //            case.failure(let error):
+    //                print("jogakMonthFail",error)
+    //            }
+    //
+    //        }
+    //    }
     
     //MARK: - @objc func
     @objc func tapToggleButton(){
@@ -522,7 +522,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             sheet.prefersGrabberVisible = true
             sheet.largestUndimmedDetentIdentifier = nil
         }
-
+        
     }
     
     //MARK: - 날짜 이동 함수
@@ -609,7 +609,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         jogakIdClosure(jogakId)
         print(jogakId)
     }
-
+    
     
     //MARK: -  Cell설정 (셀 클릭시 이동되는 정보들)
     internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
@@ -713,7 +713,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         cell.isRoutine = isRoutine
         
         cell.jogakId = dailyInfo[indexPath.row].jogakID
-
+        
         //isAchivement 처리
         if dailyInfo[indexPath.row].isAchivement == true{ //true로 변경
             cell.cellImage.image = UIImage(named: "squareCheckmark")

@@ -69,7 +69,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         }
         
         getDailyJogakDetail(JogakId: jogakId)
-        
+
         let setroutine = SetRoutineModal()
         let desetroutine = deSetRoutineModal()
         
@@ -97,12 +97,13 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 //MARK: - 루틴으로 지정되지 않은 조각
             desetroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
-                
+                print(editjogak)
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
                     vc.configure(backColor: UIColor(hex : editJogak.color!
                                                    ).withAlphaComponent(0.1), textColor:UIColor(hex: editJogak.color!), text: editJogak.category)
+                    vc.currentJogakId = self.jogakId
                     
                     }
                 parentViewController.navigationController?.pushViewController(vc, animated: true)
@@ -126,7 +127,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 //MARK: - 루틴으로 지정된 조각
             setroutine.pushClosure = { [self] in
                 let vc = JogakEditViewController()
-                
+                print(editjogak)
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
