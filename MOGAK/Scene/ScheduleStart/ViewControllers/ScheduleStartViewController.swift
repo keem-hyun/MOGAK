@@ -453,14 +453,14 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
     }
     //MARK: - 조각 성공 API
+    //토스트 팝업이 뜨는 api이므로, 로딩 뷰 넣지 않았습니다.
     func CheckJogakSuccess(dailyJogakId : Int){
-        LoadingIndicator.showLoading()
         Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                LoadingIndicator.hideLoading()
+                return
             case.failure(let error):
-                LoadingIndicator.hideLoading()
+                return
             }
         }
     }
