@@ -163,6 +163,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday
+        tableUI()
         printFirstAndLastDateOfMonth() // 해당 달의 일 수 를 모두 나타냅니닷
         
     }
@@ -206,6 +207,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         self.CheckDailyJogaks(DailyDate: dateString)
         startButton.isHidden = !isToday //오늘이 아니면 starButton 히든처리
+        tableUI()
         
         
     }
@@ -553,7 +555,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeMonth")
         }
     }
-    #warning("loading화면 삽입 요망")
     @objc func DissmissModal(_ noti: Notification) {
         let currentDate = Date()
         let dateFormatter = DateFormatter()
@@ -580,7 +581,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.separatorStyle = .none
         
     }
-    #warning("tableviewUI")
     
     func tableUI(){
         if startButton.isHidden == true{ // 오늘이 아닐 경우

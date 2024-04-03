@@ -42,6 +42,7 @@ struct ScheduleJogakDetail: Codable {
     let isAlreadyAdded: Bool
     let achievements: Int
     let startDate, endDate: String?
+    
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
@@ -82,11 +83,11 @@ struct DailyJogakDetailResponse: Codable {
     let days: [String]?
     let achievements: Int?
     let startDate, endDate: String?
-    let Color : String?
+    let color : String?
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
-        case mogakTitle, category, title, isRoutine, days, achievements, startDate, endDate, Color
+        case mogakTitle, category, title, isRoutine, days, achievements, startDate, endDate, color
     }
 }
 

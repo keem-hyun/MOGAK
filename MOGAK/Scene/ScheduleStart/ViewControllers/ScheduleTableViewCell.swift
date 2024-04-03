@@ -67,7 +67,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         guard let parentViewController = self.parentVC else {
             return
         }
-        print(jogakId)
+        
         getDailyJogakDetail(JogakId: jogakId)
         
         let setroutine = SetRoutineModal()
@@ -101,10 +101,10 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
-                    vc.mogakCategoryLabel.text = editJogak.category
-                    vc.currentJogakId = self.jogakId
+                    vc.configure(backColor: UIColor(hex : editJogak.color!
+                                                   ).withAlphaComponent(0.1), textColor:UIColor(hex: editJogak.color!), text: editJogak.category)
+                    
                     }
-                
                 parentViewController.navigationController?.pushViewController(vc, animated: true)
             }
             
@@ -130,7 +130,8 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 if let editJogak = self.editjogak {
                     vc.currentJogak = editJogak
                     vc.jogakDetailTextField.text = editJogak.title
-                    vc.mogakCategoryLabel.text = editJogak.category
+                    vc.configure(backColor: UIColor(hex : editJogak.color!
+                                                   ).withAlphaComponent(0.1), textColor:UIColor(hex: editJogak.color!), text: editJogak.category)
                     vc.currentJogakId = self.jogakId
                     
                     }
@@ -231,7 +232,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         Apinetwork.getdailyJogakDetail(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
-                self.editjogak = JogakDetail(jogakID: data?.result?.jogakID ?? 0, mogakTitle: data?.result?.mogakTitle ?? "" , category: data?.result?.category ?? "", title: data?.result?.title ?? "", isRoutine: data?.result?.isRoutine ?? false, days: data?.result?.days ?? [], startDate: data?.result?.startDate ?? "", endDate: data?.result?.endDate ?? "",isAlreadyAdded: nil, achievements: data?.result?.achievements ?? 0, Color: data?.result?.Color ?? "")
+                self.editjogak = JogakDetail(jogakID: data?.result?.jogakID ?? 0, mogakTitle: data?.result?.mogakTitle ?? "" , category: data?.result?.category ?? "", title: data?.result?.title ?? "", isRoutine: data?.result?.isRoutine ?? false, days: data?.result?.days ?? [], startDate: data?.result?.startDate ?? "", endDate: data?.result?.endDate ?? "",isAlreadyAdded: nil, achievements: data?.result?.achievements ?? 0, color: data?.result?.color ?? "")
                 LoadingIndicator.hideLoading()
             case.failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
