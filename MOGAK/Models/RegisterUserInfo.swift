@@ -25,6 +25,8 @@ class RegisterUserInfo {
     @Published var loginState: Bool? = nil
     
     @Published var userIsRegistered: Bool = false
+    @Published var someError: String? = nil
+    @Published var happendSomeError: Bool = false
 
 //    @Published var profileImage : UIImage? = UIImage(named: "setProfile")
     @Published var profileImage : UIImage? = nil
