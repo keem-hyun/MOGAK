@@ -21,6 +21,7 @@ enum ApiRouter : URLRequestConvertible{
     case JogakSuccess(dailyJogakId : Int)                          //조각 성공
     case JogakFail(dailyJogakId : Int)                       //조각 실패
     case getJogakDailyCheck(DailyDate : String)             //일별 조각 조회
+    case getdailyJogakDetail(jogakId : Int)                 //데일리 모각의 정보
     case getAddJogakToday(jogakId : Int)                    //일일 조각 시작
     case getJogakMonth(startDay : String, endDay : String) //주, 월별 조각 조회
 //    case getPost                                            // 회고록 조회
@@ -52,6 +53,8 @@ enum ApiRouter : URLRequestConvertible{
             return "/api/modarats/mogaks/jogaks/\(dailyJogakId)/fail"
         case .getJogakMonth(startDay: let startDay, endDay: let endDay):
             return "/api/modarats/mogaks/jogaks/routines?startDay=" + startDay+"&endDay=" + endDay
+        case .getdailyJogakDetail(jogakId: let jogakId):
+            return "/api/modarats/mogaks/jogaks/\(jogakId)/detail"
         }
     }
     
@@ -67,11 +70,12 @@ enum ApiRouter : URLRequestConvertible{
     //어떤 방식(get, post, delete, update)
     var method: HTTPMethod {
         switch self {
-        case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth : return .get
+        case .getModalartList, .detailModalart, .getJogakList, .getDetailMogakData, .getJogakDailyCheck, .getJogakMonth, .getdailyJogakDetail : return .get
 //        case .makePost: return .post
         case .getAddJogakToday : return .post
         case .JogakSuccess: return .put
         case .JogakFail: return .put
+  
         }
     }
     
@@ -109,7 +113,10 @@ enum ApiRouter : URLRequestConvertible{
             request = try URLEncoding.queryString.encode(request, with: parameters)
         case .getJogakMonth:
             request = try URLEncoding.queryString.encode(request, with: parameters)
+        case .getdailyJogakDetail:
+            request = try URLEncoding.queryString.encode(request, with: parameters)
         }
+        
         //request = try URLEncoding.queryString.encode(request, with: parameters)
         //이 인코딩 방식은 GET 요청 또는 URL 쿼리 매개변수를 전송할 때 사용
         

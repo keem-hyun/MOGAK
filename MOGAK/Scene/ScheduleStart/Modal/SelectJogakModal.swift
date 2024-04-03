@@ -18,7 +18,8 @@ class SelectJogakModal : UIViewController{
     var SelectJogaklist : [String] = [] // 루틴으로 지정된 조각
     
     //모다라트
-    var modalartList: [ScheduleModalartList] = [] ///모든 모다라트 리스트
+    var modalartList: [ScheduleModalartList] = []
+    
     var modalartTitles: [String] = []
     
     var nowShowModalArtNum: Int = 0
@@ -42,9 +43,9 @@ class SelectJogakModal : UIViewController{
         return view
     }()
     
-    private lazy var mainLabel : UIButton = {
+     lazy var mainLabel : UIButton = {
         let btn = UIButton()
-        btn.setTitle("내 모다라트", for: .normal)
+        //btn.setTitle("내 모다라트", for: .normal)
         btn.titleLabel?.font = DesignSystemFont.semibold20L140.value
         btn.setTitleColor(.black, for: .normal)
         btn.isUserInteractionEnabled = true
@@ -97,6 +98,11 @@ class SelectJogakModal : UIViewController{
         getModalart()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.post(name: self.DidDismissModal, object: nil, userInfo: nil)
+    }
+    
     
     //MARK: - UIsetting
     
@@ -143,10 +149,6 @@ class SelectJogakModal : UIViewController{
     //MARK: - tableView UI
     
     func tableSetUI() {
-        MogakTableView.snp.makeConstraints{
-            $0.edges.equalTo(contentView)
-        }
-        
         //아니, 테이블 뷰 하나에 셀 두개가 된다고????????????????????
         //시발 진작 알려주지 이거때매 3주는 고생했고만 ;;;
         MogakTableView.register(MogakTableViewCell.self, forCellReuseIdentifier: "MogakTableViewCell")
@@ -157,14 +159,8 @@ class SelectJogakModal : UIViewController{
         MogakTableView.delegate = self
         MogakTableView.separatorStyle = .none
         
-        tableViewData = [MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false, jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false,isRoutine: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)]),
-                         MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false ,jogakID: 0)])]
+        tableViewData = [MogakJogak(mogaktitle: "", mogakcolor: "", jogakList: [(title: "", isAlreadyAdded: false, isRoutine: false, jogakID: 0)])
+        ]
     }
     //MARK: - 모다라트 변경
     @objc func tapModalart(){
@@ -172,16 +168,19 @@ class SelectJogakModal : UIViewController{
     }
     
     //MARK: - 모다라트 리스트 조회
+    
     func getModalart() {
+        LoadingIndicator.showLoading()
         Apinetwork.getModalartList { result in
             switch result {
             case .failure(let error):
                 print("\(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             case .success(let list):
                 guard let modalartList = list else { return }
                 
                 self.modalartList = modalartList.map { modalart in
-                    return ScheduleModalartList(id: modalart.id, title: modalart.title)
+                    return ScheduleModalartList(id: modalart.id, title: modalart.title, color: modalart.color)
                 }
                 
                 self.modalartTitles = self.modalartList.map { $0.title }
@@ -195,6 +194,7 @@ class SelectJogakModal : UIViewController{
                     self.nowShowModalArtIndex = 0
                     self.setupMenu()
                 }
+                LoadingIndicator.hideLoading()
             }
         }
     }
@@ -216,7 +216,6 @@ class SelectJogakModal : UIViewController{
                         self.MogakTableView.collapse(section)
                     }
                     
-                    
                     //테이블 뷰 리로딩
                     self.MogakTableView.reloadData()
                     
@@ -233,15 +232,18 @@ class SelectJogakModal : UIViewController{
     
     //MARK: - 모다라트 정보
     func getModalartDetailInfo(id: Int) {
+        LoadingIndicator.showLoading()
         Apinetwork.getDetailModalartInfo(modalartId: id) { result in
             switch result {
             case .failure(let error):
+                LoadingIndicator.hideLoading()
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                 
             case .success(let modalInfo):
                 guard let modalInfo = modalInfo else { return }
                 self.getDetailMogakData(id: modalInfo.id)
                 print("\(modalInfo.id) 의 id인 모다라트")
+                LoadingIndicator.hideLoading()
                 
             }
             
@@ -250,6 +252,7 @@ class SelectJogakModal : UIViewController{
     }
     //MARK: - 모각 정보
     func getDetailMogakData(id: Int) {
+        LoadingIndicator.showLoading()
         Apinetwork.getDetailMogakData(modalartId: id) { result in
             switch result {
             case .success(let data):
@@ -266,26 +269,30 @@ class SelectJogakModal : UIViewController{
                         
                         return MogakJogak(mogaktitle: mogakData.title, mogakcolor: mogakData.color ?? "", jogakList: [(title: "1", isAlreadyAdded: false,isRoutine: false, jogakID : 0)])
                     }
+                    
                     for (index, mogakData) in mogakDataArray.enumerated() {
                         
                         if index < self.tableViewData.count {
                             self.tableViewData[index].mogaktitle = mogakData.title
-                            self.getDetailJogakData(id: mogakData.mogakId, DailyDate: dateString)
+                            self.getDetailJogakData(id: mogakData.mogakId, DailyDate: dateString) //조각불러오기
                         }
                         
                         self.MogakTableView.reloadData()
                     }
                     
                 } else {
-                    print("모다라트에 해당하는 모각 데이터가 없습니다.")
+                    
                 }
+                LoadingIndicator.hideLoading()
             case .failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 한 모각에 대응하는 조각보기
     func getDetailJogakData(id : Int, DailyDate : String){
+        LoadingIndicator.showLoading()
         Apinetwork.getAllMogakDetailJogaks(mogakId: id, DailyDate: DailyDate){result in
             switch result{
             case.success(let data):
@@ -298,6 +305,7 @@ class SelectJogakModal : UIViewController{
                             let isAlreadyAddedValue = jogakDataItem.isAlreadyAdded
                             let JogakIdValue = jogakDataItem.jogakID
                             let isRoutineValue = jogakDataItem.isRoutine
+                            
                             self.tableViewData[mogakDataIndex].jogakList.append((title: jogakDataItem.title, isAlreadyAdded: isAlreadyAddedValue, isRoutine: isRoutineValue, jogakID : JogakIdValue))
                         }
                         
@@ -305,27 +313,28 @@ class SelectJogakModal : UIViewController{
                     self.MogakTableView.reloadData()
                     
                 }
-                
+                LoadingIndicator.hideLoading()
             case.failure(let error):
                 print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 일일 조각 시작
-
     func getAddJogakDaily(jogakId : Int){
+        LoadingIndicator.showLoading()
         Apinetwork.getAddJogakDaily(jogakId: jogakId){ result in
             switch result{
             case.success(let data):
                 print(data as Any)
-                print("일일조각시작")
+                LoadingIndicator.hideLoading()
+                
             case.failure(let error):
                 print(error)
-                print("일일조각시작에러")
+                LoadingIndicator.hideLoading()
             }
         }
     }
-    
 }
 
 extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
@@ -347,15 +356,16 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         }
     }
     //MARK: - tableView Setting
-    
     func tableView(_ tableView: ExpyTableView, canExpandSection section: Int) -> Bool {
         return true
     }
+    
     //MARK: - Mogak
     
     func tableView(_ tableView: ExpyTableView, expandableCellForSection section: Int) -> UITableViewCell {
+        
         guard section < tableViewData.count else {
-            MogakTableView.reloadData() //이거 안하면 테이블뷰 오류나요ㅠㅠㅠㅠㅠ ㅅㅣ발
+            MogakTableView.reloadData() ///이거 안하면 테이블뷰 오류나요ㅠㅠㅠㅠㅠ ㅅㅣ발
             return UITableViewCell()
         }
         
@@ -369,7 +379,6 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         // 셀에 mogakTitle 표시
         cell.configureMogak(with: mogakdata)
         
-        
         return cell
     }
     
@@ -380,6 +389,7 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
             return tableViewData.count
         }
     }
+    
     //MARK: - Jogak
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { //조각의 개수
@@ -412,24 +422,22 @@ extension SelectJogakModal: ExpyTableViewDelegate, ExpyTableViewDataSource {
         
     }
     //MARK: - 추가하기 버튼 클릭시
-    @objc func addJogak(){
-        dismiss(animated: true){ [self] in
-            var Forcount : Int = 0
+    @objc func addJogak() {
+        dismiss(animated: true, completion: { [self] in
+            let serialQueue = DispatchQueue(label: "com.example.serialQueue")
             
             for jogakId in UserDefaultsManager.shared.clickedJogakIdList {
-                print(jogakId)
-                self.getAddJogakDaily(jogakId: jogakId)
-                Forcount = Forcount + 1
-                print("forcount : ",Forcount)
+                serialQueue.async {
+                    self.getAddJogakDaily(jogakId: jogakId)
+                    print(jogakId , "호출 완료")
                 }
-            
-            NotificationCenter.default.post(name: DidDismissModal, object: nil, userInfo: nil)
-            
-            UserDefaultsManager.shared.clickedJogakIdList.removeAll()
-            
-        }
-        
+            }
+            serialQueue.async {
+                UserDefaultsManager.shared.clickedJogakIdList.removeAll()
+            }
+        })
     }
+
     
 }
 
@@ -439,6 +447,7 @@ extension Date {
     }
 }
 //MARK: - MogakTableViewCell
+#warning("MogakTableViewCell")
 class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
     
     func changeState(_ state: ExpyState, cellReuseStatus cellReuse: Bool) {
@@ -545,6 +554,7 @@ class MogakTableViewCell : UITableViewCell,ExpyTableViewHeaderCell{
     }
 }
 //MARK: - JogakTableViewCell
+#warning("JogakTableViewCell")
 
 class JogakTableViewCell : UITableViewCell{
     
@@ -571,7 +581,7 @@ class JogakTableViewCell : UITableViewCell{
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+
         layoutJogak()
         selectionStyle = .none
     }
@@ -590,8 +600,8 @@ class JogakTableViewCell : UITableViewCell{
             $0.leading.equalTo(JogakimageView).inset(25)
             $0.top.bottom.trailing.equalToSuperview()
             $0.centerY.equalToSuperview()
-            
         }
+        
         JogakimageView.snp.makeConstraints{
             $0.width.height.equalTo(20)
             $0.leading.equalToSuperview().inset(40)
@@ -602,7 +612,6 @@ class JogakTableViewCell : UITableViewCell{
     var clickedJogakId : Int = 0
     
     //MARK: - 조각 라벨 설정
-
     func configureJogak(with jogakData: (title: String, isAlreadyAdded: Bool, isRoutine: Bool, jogakID : Int)) {
         JogakLabel.text = jogakData.title
         
@@ -623,8 +632,6 @@ class JogakTableViewCell : UITableViewCell{
                 JogakimageView.image = UIImage(systemName: "square")
             }
         }
-        
-
         JogakimageView.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
             JogakLabel.isUserInteractionEnabled = !(jogakData.isAlreadyAdded || jogakData.isRoutine)
     }

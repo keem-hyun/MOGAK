@@ -84,7 +84,6 @@ class ApiNetwork{
                 switch response.result {
                 case .success(let jogakDailyResponse):
                     completionHandler(.success([jogakDailyResponse]))
-                    //print("ApiNetwork.swift에서 success뜸", jogakDailyResponse.result)
                 case .failure(let error):
                     completionHandler(.failure(error))
                 }
@@ -103,6 +102,21 @@ class ApiNetwork{
                 }
             }
     }
+    
+    //MARK: - 일일 조각 디테일 조회
+    func getdailyJogakDetail(jogakId: Int, completionHandler: @escaping(Result<DailyJogakDetail?, Error>) -> Void){
+        AF.request(ApiRouter.getdailyJogakDetail(jogakId: jogakId), interceptor: CommonLoginManage())
+            .validate(statusCode: 200..<500)
+            .responseDecodable(of: DailyJogakDetail.self) { response in
+                switch response.result {
+                case .success(let data):
+                    completionHandler(.success(data))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
+            }
+    }
+
     //MARK: - 조각 실패
     func getJogakFail(dailyJogakId : Int, completionHandler : @escaping(Result<[JogakFail]?, Error>)-> Void) {
                 AF.request(ApiRouter.JogakFail(dailyJogakId: dailyJogakId), interceptor: CommonLoginManage())

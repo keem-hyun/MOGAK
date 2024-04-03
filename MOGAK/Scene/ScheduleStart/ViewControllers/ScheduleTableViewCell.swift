@@ -11,6 +11,11 @@ import Then
 
 class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDelegate,UITableViewDelegate {
     
+    //MARK: - 조각 정보
+    
+    var jogakData: [ScheduleJogakDetail] = []
+    let Apinetwork =  ApiNetwork.shared
+    
     //MARK: - properties
     
     lazy var cellImage : UIImageView = {
@@ -37,6 +42,8 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
         return cellButton
     }()
     
+    var jogakId = Int()
+    
     lazy var recodelabel: UILabel? = {
         let label = UILabel()
         label.numberOfLines = 4
@@ -51,7 +58,9 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
     }()
     
     let selectJogakModal = SelectJogakModal()
+    let scheduleVC = ScheduleStartViewController()
     var isRoutine = Bool()
+    let editVC = JogakEditViewController()
     
 //MARK: - @objc
     @objc func ButtonClicked(){
@@ -59,17 +68,20 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             return
         }
         
+        getDailyJogakDetail(JogakId: jogakId)
+        
         let setroutine = SetRoutineModal()
         let desetroutine = deSetRoutineModal()
         
         setroutine.modalPresentationStyle = .formSheet
         desetroutine.modalPresentationStyle = .formSheet
         
-        //if cellImage.image == UIImage(named: "emptySquareCheckmark"){
+        
         if isRoutine == false{
             parentViewController.present(desetroutine,animated: true)
         
             desetroutine.jogaktitleLabel.text = cellLabel.text
+            
             
             if let desetsheet = desetroutine.sheetPresentationController{
                 if #available(iOS 16.0, *) {
@@ -82,6 +94,20 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 }
                 
             }
+//MARK: - 루틴으로 지정되지 않은 조각
+            desetroutine.pushClosure = { [self] in
+                let vc = JogakEditViewController()
+                
+                if let editJogak = self.editjogak {
+                    vc.currentJogak = editJogak
+                    vc.jogakDetailTextField.text = editJogak.title
+                    vc.configure(backColor: UIColor(hex : editJogak.color!
+                                                   ).withAlphaComponent(0.1), textColor:UIColor(hex: editJogak.color!), text: editJogak.category)
+                    
+                    }
+                parentViewController.navigationController?.pushViewController(vc, animated: true)
+            }
+            
         }else{
             parentViewController.present(setroutine,animated: true)
             
@@ -97,9 +123,22 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
                 }
                 
             }
+//MARK: - 루틴으로 지정된 조각
+            setroutine.pushClosure = { [self] in
+                let vc = JogakEditViewController()
+                
+                if let editJogak = self.editjogak {
+                    vc.currentJogak = editJogak
+                    vc.jogakDetailTextField.text = editJogak.title
+                    vc.configure(backColor: UIColor(hex : editJogak.color!
+                                                   ).withAlphaComponent(0.1), textColor:UIColor(hex: editJogak.color!), text: editJogak.category)
+                    vc.currentJogakId = self.jogakId
+                    
+                    }
+                
+                parentViewController.navigationController?.pushViewController(vc, animated: true)
+            }
         }
-        
-        print("cell button clicked")
     }
     
     //MARK: - init
@@ -146,6 +185,7 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
             $0.trailing.equalTo(contentView).offset(-16)
             $0.centerY.equalTo(contentView)
         }
+        
         recodelabel?.snp.makeConstraints {
             $0.leading.equalTo(cellLabel.snp.trailing).offset(10)
                $0.top.equalTo(contentView).offset(10) // Adjust top constraint as needed
@@ -182,6 +222,25 @@ class ScheduleTableViewCell : UITableViewCell, UISheetPresentationControllerDele
 
         return labelSize.height
     }
+    
+    //MARK: - 조각 수정을 위한 API
+    
+    var editjogak: JogakDetail?
+    
+    func getDailyJogakDetail(JogakId : Int){
+        LoadingIndicator.showLoading()
+        Apinetwork.getdailyJogakDetail(jogakId: jogakId){ result in
+            switch result{
+            case.success(let data):
+                self.editjogak = JogakDetail(jogakID: data?.result?.jogakID ?? 0, mogakTitle: data?.result?.mogakTitle ?? "" , category: data?.result?.category ?? "", title: data?.result?.title ?? "", isRoutine: data?.result?.isRoutine ?? false, days: data?.result?.days ?? [], startDate: data?.result?.startDate ?? "", endDate: data?.result?.endDate ?? "",isAlreadyAdded: nil, achievements: data?.result?.achievements ?? 0, color: data?.result?.color ?? "")
+                LoadingIndicator.hideLoading()
+            case.failure(let error):
+                print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
+                LoadingIndicator.hideLoading()
+            }
+        }
+    }
+
 
 }
 

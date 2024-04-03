@@ -15,7 +15,6 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     let Apinetwork =  ApiNetwork.shared
     
-    
     //MARK: - Properties
     
     private lazy var calendarView : FSCalendar = {
@@ -91,6 +90,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         blankLabel.font = UIFont(name: "Pretendard", size: 16)
         blankLabel.textColor = UIColor(hex: "#808497")
         blankLabel.numberOfLines = 2
+        blankLabel.setLineSpacing(lineSpacing: 4)
         blankLabel.textAlignment = .center
         return blankLabel
     }()
@@ -126,20 +126,14 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         startbutton.backgroundColor = DesignSystemColor.signature.value  //백그라운드색
         startbutton.titleLabel?.font = DesignSystemFont.semibold18L100.value
         startbutton.layer.cornerRadius = 10 //둥글기
-        //        startbutton.isHidden = true
         startbutton.addTarget(self, action: #selector(goStart), for: .touchUpInside)
         return startbutton
     }()
     
-    private var isToday: Bool {
-        let selectedDate = calendarView.selectedDate ?? Date()
-        let today = Date()
-        
-        return Calendar.current.isDate(selectedDate, inSameDayAs: today)
-    }
+    var jogakIdClosure: ((Int) -> Void)?
     
     let selectJogakModal = SelectJogakModal()
-    
+    let modalartVC = SelectModalartTableView()
     
     //MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -150,51 +144,36 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.configureUI()
         self.configureCalendar()
         self.tableSetting()
-        tableViewUI()
-        startButton.isHidden = !isToday
+        self.tableUI()
         
+        
+        modalartVC.getModalart()
         NotificationCenter.default.addObserver(self, selector: #selector(self.DissmissModal(_:)), name: selectJogakModal.DidDismissModal, object: nil)
         
-        self.ScheduleTableView.reloadData()
-        
-    }
-    
-    @objc func DissmissModal(_ noti: Notification) {
-        let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        
-        let dateString = dateFormatter.string(from: currentDate)
-        
-        self.CheckDailyJogaks(DailyDate: dateString)
-        
-        OperationQueue.main.addOperation { // DispatchQueue도 가능.
-            self.ScheduleTableView.reloadData()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
         
         let currentDate = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        
         let dateString = dateFormatter.string(from: currentDate)
         
         self.CheckDailyJogaks(DailyDate: dateString)
-        
-        printFirstAndLastDateOfMonth()
-        
-        self.ScheduleTableView.reloadData()
-        
+        startButton.isHidden = !isToday
+        tableUI()
+        printFirstAndLastDateOfMonth() // 해당 달의 일 수 를 모두 나타냅니닷
         
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        returnToday()
+        
+        calendarView.select(Date())
+        startButton.isHidden = !isToday
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -204,11 +183,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }
     
     //MARK: - Calendar func
-    
-    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
+    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool){
         calendarView.snp.updateConstraints{make in
             make.height.equalTo(bounds.height)
         }
+        
         self.view.layoutIfNeeded()
     }
     
@@ -227,7 +206,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         let dateString = dateFormatter.string(from: date)
         
         self.CheckDailyJogaks(DailyDate: dateString)
-        startButton.isHidden = !isToday
+        startButton.isHidden = !isToday //오늘이 아니면 starButton 히든처리
+        tableUI()
+        
         
     }
     //MARK: - 해당 월의 첫날, 마지막날 계산
@@ -243,9 +224,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: firstDate)
     }
     
-    func returnToday(){
-        calendarView.select(Date())
-        startButton.isHidden = false
+    private var isToday: Bool { //오늘 날짜 = true / 아니면 = false
+        let selectedDate = calendarView.selectedDate ?? Date()
+        let today = Date()
+        
+        return Calendar.current.isDate(selectedDate, inSameDayAs: today)
     }
     
     // 예시에서 사용하는 함수
@@ -260,7 +243,8 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("첫 번째 날: \(firstDay)")
             print("마지막 날: \(lastDay)")
             
-            getJogakMonth(startDay: firstDay, endDay: lastDay)
+//            getJogakMonth(startDay: firstDay, endDay: lastDay)
+            
         } else {
             print("날짜를 가져올 수 없습니다.")
         }
@@ -302,7 +286,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         
         [upperView,calendarView,motiveLabel,toggleButton,headerStackView,underView,blankimage,blankLabel,makeModalArt].forEach{view.addSubviews($0)}
-        
+        underView.addSubviews(motiveLabel,ScheduleTableView,startButton)
         
         
         headerStackView.snp.makeConstraints{
@@ -313,8 +297,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         calendarView.snp.makeConstraints{
             $0.top.equalTo(headerStackView.snp.bottom).offset(5)
             $0.trailing.leading.equalToSuperview().inset(20)
-            $0.height.equalTo(300) // 캘린더뷰의(월)일때의 총 높이
-            #warning("캘린더 높이 비율로 조정")
+            $0.height.equalTo(250) // 캘린더뷰의(월)일때의 총 높이
+            
+#warning("캘린더 높이 비율로 조정")
         }
         
         toggleButton.snp.makeConstraints{
@@ -331,16 +316,17 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         
         underView.snp.makeConstraints{
             $0.top.equalTo(calendarView.snp.bottom).offset(20)
-            $0.bottom.leading.trailing.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
         }
         
         motiveLabel.snp.makeConstraints{
-            $0.top.equalTo(calendarView.snp.bottom).offset(16)
+            $0.top.equalTo(upperView.snp.bottom).offset(20)
             $0.leading.equalTo(calendarView.collectionView)
         }
         
         blankimage.snp.makeConstraints{
-            $0.bottom.equalTo(blankLabel.snp.top).offset(-10)
+            $0.bottom.equalTo(blankLabel.snp.top).offset(-20)
             $0.width.height.equalTo(88.0)
             $0.centerX.equalToSuperview()
         }
@@ -351,13 +337,14 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         }
         
         makeModalArt.snp.makeConstraints{
-            $0.top.equalTo(blankLabel.snp.bottom).offset(10)
+            $0.top.equalTo(blankLabel.snp.bottom).offset(20)
             $0.width.equalTo(153)
             $0.height.equalTo(30)
             $0.centerX.equalToSuperview()
         }
-        
     }
+    
+    
     
     //MARK: - configureCalendar
     
@@ -406,14 +393,15 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //MARK: - 햄치즈토스트 팝업 맨~
     func showToast(message : String, font: UIFont) {
-        let toastLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 112, y: self.view.frame.size.height-150, width: 224, height: 29))
+        let toastLabel = UILabel(frame: CGRect(x: (self.view.frame.size.width - 300) / 2, y: self.view.frame.size.height * 0.75, width: 300, height: 45))
         toastLabel.backgroundColor = UIColor(red: 0.142, green: 0.147, blue: 0.179, alpha: 0.7)
         toastLabel.textColor = UIColor.white
         toastLabel.font = font
         toastLabel.textAlignment = .center;
         toastLabel.text = message
+        toastLabel.numberOfLines = 2
         toastLabel.alpha = 1.0
-        toastLabel.layer.cornerRadius = 16;
+        toastLabel.layer.cornerRadius = 23;
         toastLabel.clipsToBounds  =  true
         self.view.addSubview(toastLabel)
         UIView.animate(withDuration: 3.0, delay: 0.1, options: .curveEaseOut, animations: {
@@ -423,10 +411,11 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         })
     }
     
-    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, isAchivement : Bool, isRoutine : Bool)] = []
+    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, jogakID : Int, isAchivement : Bool, isRoutine : Bool)] = []
     
     //MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
+        LoadingIndicator.showLoading()
         Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
             switch result {
             case .success(let jogakDailyChecks):
@@ -435,13 +424,14 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                     for jogakDailyCheck in jogakDailyChecks {
                         let result = jogakDailyCheck.result
                         for dailyJogak in result.dailyJogaks {
-                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
+                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, dailyJogak.jogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
                         }
-                        //print("일일 조각 리스트 : ",self.dailyInfo)
+                        self.ScheduleTableView.reloadData()
+                        LoadingIndicator.hideLoading()
                     }
-                    self.ScheduleTableView.reloadData()
                 } else {
                     print("일일 조각을 위한 nil 배열 수신.")
+                    LoadingIndicator.hideLoading()
                 }
             case .failure(let error):
                 print("뷰컨에서 failure",error)
@@ -452,39 +442,41 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     }
     //MARK: - 조각 실패 API
     func CheckJogakFail(dailyJogakId : Int){
+        LoadingIndicator.showLoading()
         Apinetwork.getJogakFail(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                return //print(jogakfail as Any)
+                LoadingIndicator.hideLoading()
             case.failure(let error):
-                print("jogakFail error",error)
+                LoadingIndicator.hideLoading()
             }
         }
     }
     //MARK: - 조각 성공 API
+    //토스트 팝업이 뜨는 api이므로, 로딩 뷰 넣지 않았습니다.
     func CheckJogakSuccess(dailyJogakId : Int){
         Apinetwork.getJogakSuccess(dailyJogakId: dailyJogakId){ result in
             switch result{
             case.success(_):
-                return //print(jogakSuccess as Any)
+                return
             case.failure(let error):
-                print("jogakFail error",error)
+                return
             }
         }
     }
     //MARK: - 월간 조각 조회
-    func getJogakMonth(startDay : String, endDay : String){
-        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
-            switch result{
-            case.success(let jogakMonth):
-                //let jogakResult = jogakMonth.result
-                print(jogakMonth)
-            case.failure(let error):
-                print("jogakMonthFail",error)
-            }
-            
-        }
-    }
+//    func getJogakMonth(startDay : String, endDay : String){
+//        Apinetwork.getJogakMonth(startDay: startDay, endDay: startDay){ result in
+//            switch result{
+//            case.success(let jogakMonth):
+//                //let jogakResult = jogakMonth.result
+//                print(jogakMonth)
+//            case.failure(let error):
+//                print("jogakMonthFail",error)
+//            }
+//            
+//        }
+//    }
     
     //MARK: - @objc func
     @objc func tapToggleButton(){
@@ -510,26 +502,27 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         ScheduleTableView.reloadData()
     }
     
-//    @objc func goAlarm(_ sender : UIButton){
-//        let alarmVC = AlarmViewController()
-//        navigationController?.pushViewController(alarmVC, animated: true)
-//        print("go alarm")
-//    }
+    //    @objc func goAlarm(_ sender : UIButton){
+    //        let alarmVC = AlarmViewController()
+    //        navigationController?.pushViewController(alarmVC, animated: true)
+    //        print("go alarm")
+    //    }
     
     @objc func goStart(_ sender : UIButton){
+        let vc = SelectModalartTableView()
         
-        let selectJogak = SelectJogakModal()
-        selectJogak.modalPresentationStyle = .pageSheet
+        let navigationController = UINavigationController(rootViewController: vc)
+        navigationController.modalPresentationStyle = .pageSheet
         
+        present(navigationController, animated: true, completion: nil)
         
-        present(selectJogak, animated: true, completion: nil)
-        
-        if let sheet = selectJogak.sheetPresentationController {
+        if let sheet = navigationController.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.delegate = self
             sheet.prefersGrabberVisible = true
             sheet.largestUndimmedDetentIdentifier = nil
         }
+
     }
     
     //MARK: - 날짜 이동 함수
@@ -562,6 +555,17 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             print("TapBeforeMonth")
         }
     }
+    @objc func DissmissModal(_ noti: Notification) {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = dateFormatter.string(from: currentDate)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+            self.CheckDailyJogaks(DailyDate: dateString)
+        }
+    }
 }
 
 //MARK: - tableview
@@ -573,65 +577,68 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         ScheduleTableView.dataSource = self
         ScheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
         ScheduleTableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        underView.addSubview(motiveLabel)
-        underView.addSubview(ScheduleTableView)
-        underView.addSubview(startButton)
-        
-        ScheduleTableView.snp.makeConstraints{
-            $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalTo(calendarView.collectionView)
-            $0.bottom.equalTo(startButton.snp.top)
-        }
-        
-        startButton.snp.makeConstraints{
-            $0.leading.trailing.equalToSuperview().inset(20)
-            //$0.top.equalTo(ScheduleTableView.snp.bottom)
-            $0.bottom.equalTo(underView.snp.bottom).inset(110) //16
-            $0.height.equalTo(48)
-        }
-    }
-    
-    func tableViewUI(){
-        ScheduleTableView.reloadData()
         self.ScheduleTableView.backgroundColor = .clear
         ScheduleTableView.separatorStyle = .none
         
-        
     }
     
+    func tableUI(){
+        if startButton.isHidden == true{ // 오늘이 아닐 경우
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(makeModalArt.snp.bottom).multipliedBy(1.5)
+            }
+        }else{
+            ScheduleTableView.snp.makeConstraints{
+                $0.top.equalTo(motiveLabel.snp.bottom).offset(10)
+                $0.leading.trailing.equalTo(calendarView.collectionView)
+                $0.bottom.equalTo(makeModalArt.snp.bottom).multipliedBy(1.3)
+            }
+            
+            startButton.snp.makeConstraints{
+                $0.top.equalTo(ScheduleTableView.snp.bottom)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(48)
+            }
+        }
+    }
     
+    func Closurefunc(jogakId: Int) {
+        guard let jogakIdClosure = self.jogakIdClosure else { return }
+        jogakIdClosure(jogakId)
+        print(jogakId)
+    }
+
     
-    //MARK: -  Cell설정 (셀로부터 이동되는 정보들)
-    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){ //셀 클릭
+    //MARK: -  Cell설정 (셀 클릭시 이동되는 정보들)
+    internal func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         guard let cell = ScheduleTableView.cellForRow(at: indexPath) as? ScheduleTableViewCell else {
             
             return
         }
         
-        let Certificate = CertificationModalVC()
-        
-        Certificate.modalPresentationStyle = .pageSheet
         
         if cell.cellImage.image == UIImage(named: "emptySquareCheckmark"){
             cell.cellImage.image = UIImage(named: "squareCheckmark")
-            Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n오늘 조각을 완료하셨군요!"
+            //            Certificate.titleLabel.text = "'" + cell.cellLabel.text! + "'" + "\n오늘 조각을 완료하셨군요!"
             
             //print(dailyInfo[indexPath.row].jogaktitle ,dailyInfo[indexPath.row].dailyjogakId,"조각 성공")
+            showToast(message : "'" + cell.cellLabel.text! + "'" + " \n오늘 조각을 완료하셨군요!", font:DesignSystemFont.medium12L150.value)
             
             CheckJogakSuccess(dailyJogakId: dailyInfo[indexPath.row].dailyjogakId)
             
             //            NotificationCenter.default.addObserver(self, selector: #selector(dataReceived(_:)), name: NSNotification.Name("RecordText"), object: nil)
             
-            present(Certificate, animated: true)
+            //            present(Certificate, animated: true)
             
-            if let sheet = Certificate.sheetPresentationController {
-                sheet.detents = [.medium()]
-                sheet.delegate = self
-                sheet.prefersGrabberVisible = true
-                sheet.largestUndimmedDetentIdentifier = nil
-                
-            }
+            //            if let sheet = Certificate.sheetPresentationController {
+            //                sheet.detents = [.medium()]
+            //                sheet.delegate = self
+            //                sheet.prefersGrabberVisible = true
+            //                sheet.largestUndimmedDetentIdentifier = nil
+            //
+            //            }
             
         } else{
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
@@ -698,10 +705,15 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         let jogakTitle = dailyInfo[indexPath.row].jogaktitle
         cell.cellLabel.text = jogakTitle
+        
         let isRoutine = dailyInfo[indexPath.row].isRoutine
+        
+        //Closurefunc(jogakId: dailyInfo[indexPath.row].jogakID)
         
         cell.isRoutine = isRoutine
         
+        cell.jogakId = dailyInfo[indexPath.row].jogakID
+
         //isAchivement 처리
         if dailyInfo[indexPath.row].isAchivement == true{ //true로 변경
             cell.cellImage.image = UIImage(named: "squareCheckmark")
@@ -709,7 +721,6 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         }else{
             cell.cellImage.image = UIImage(named: "emptySquareCheckmark")
         }
-        
         
         cell.contentView.backgroundColor = .white
         cell.selectionStyle = .none
@@ -724,6 +735,20 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
     
 }
 
+extension UILabel {
+    public func setLineSpacing(lineSpacing: CGFloat) {
+        if let text = self.text {
+            let attributedStr = NSMutableAttributedString(string: text)
+            let style = NSMutableParagraphStyle()
+            style.lineSpacing = lineSpacing
+            attributedStr.addAttribute(
+                NSAttributedString.Key.paragraphStyle,
+                value: style,
+                range: NSRange(location: 0, length: attributedStr.length))
+            self.attributedText = attributedStr
+        }
+    }
+}
 
 
 
