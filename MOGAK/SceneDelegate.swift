@@ -53,6 +53,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     self.setRootViewContrller(scene, type: .main)
                 }
                 else {
+                    if RegisterUserInfo.shared.happendSomeError {
+                        var alertController = UIAlertController(title: "에러", message: RegisterUserInfo.shared.someError, preferredStyle: .alert)
+                        var okAction = UIAlertAction(title: "확인", style: .default) { _ in
+                            RegisterUserInfo.shared.happendSomeError = false
+                            RegisterUserInfo.shared.someError = nil
+                        }
+                        alertController.addAction(okAction)
+                        self.window?.rootViewController?.present(alertController, animated: false)
+                    }
+                    
                     self.setRootViewContrller(scene, type: .login)
                 }
                 
