@@ -410,7 +410,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         })
     }
     
-    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, jogakID : Int, isAchivement : Bool, isRoutine : Bool)] = []
+    var dailyInfo : [(jogaktitle : String, dailyjogakId : Int, jogakId : Int, isAchivement : Bool, isRoutine : Bool, category : String, mogaktitle : String)] = []
     
     //MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
@@ -421,12 +421,31 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
                 if let jogakDailyChecks = jogakDailyChecks {
                     self.dailyInfo = []
                     for jogakDailyCheck in jogakDailyChecks {
-                        let result = jogakDailyCheck.result
-                        for dailyJogak in result.dailyJogaks {
-                            self.dailyInfo.append((jogaktitle: dailyJogak.title, dailyjogakId: dailyJogak.dailyJogakID, dailyJogak.jogakID, isAchivement : dailyJogak.isAchievement, isRoutine :dailyJogak.isRoutine))
+                        if let result = jogakDailyCheck.result{
+                            if let dailyJogaks = result.dailyJogaks {
+                                for dailyJogak in dailyJogaks {
+                                    let jogaktitle = dailyJogak.title ?? ""
+                                    let dailyjogakId = dailyJogak.dailyJogakID ?? 0
+                                    let jogakid = dailyJogak.jogakID ?? 0
+                                    let isAchivement = dailyJogak.isAchievement ?? false
+                                    let isRoutine = dailyJogak.isRoutine ?? false
+                                    let category = dailyJogak.category ?? ""
+                                    let mogaktitle = dailyJogak.mogakTitle ?? ""
+                                    
+                                    let jogakInfo = (jogaktitle: jogaktitle,
+                                                     dailyjogakId: dailyjogakId,
+                                                     jogakId: jogakid,
+                                                     isAchivement: isAchivement,
+                                                     isRoutine: isRoutine,
+                                                     category: category,
+                                                     mogaktitle: mogaktitle)
+                                    
+                                    self.dailyInfo.append(jogakInfo)
+                                }
+                                self.ScheduleTableView.reloadData()
+                                LoadingIndicator.hideLoading()
+                            }
                         }
-                        self.ScheduleTableView.reloadData()
-                        LoadingIndicator.hideLoading()
                     }
                     
                 } else {
@@ -712,7 +731,7 @@ extension ScheduleStartViewController : UITableViewDelegate, UITableViewDataSour
         
         cell.isRoutine = isRoutine
         
-        cell.jogakId = dailyInfo[indexPath.row].jogakID
+        cell.jogakId = dailyInfo[indexPath.row].jogakId
         
         //isAchivement 처리
         if dailyInfo[indexPath.row].isAchivement == true{ //true로 변경

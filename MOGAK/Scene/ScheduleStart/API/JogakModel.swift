@@ -9,17 +9,17 @@ import Foundation
 
 //MARK: - 조각 일일 조회
 struct JogakDailyCheck: Codable {
-    let time, status, code, message: String
-    let result: result
+    let time, status, code, message: String?
+    let result: result?
 }
 struct result: Codable {
-    let size: Int
-    let dailyJogaks: [DailyJogak]
+    let size: Int?
+    let dailyJogaks: [DailyJogak]?
 }
 struct DailyJogak: Codable {
-    let jogakID,dailyJogakID: Int
-    let mogakTitle, category, title: String
-    let isRoutine, isAchievement: Bool
+    let jogakID,dailyJogakID: Int?
+    let mogakTitle, category, title: String?
+    let isRoutine, isAchievement: Bool?
 
     enum CodingKeys: String, CodingKey {
         case jogakID = "jogakId"
