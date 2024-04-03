@@ -31,6 +31,7 @@ class OnBoardingFirstViewController: UIViewController {
     }
     
     private func configure() {
+        print(#fileID, #function, #line, "- 스크린 크기: \(UIScreen.main.bounds.height)")
         self.view.addSubview(titleLabel)
         self.view.addSubview(image)
         
@@ -41,7 +42,12 @@ class OnBoardingFirstViewController: UIViewController {
 
         
         image.snp.makeConstraints({
-            $0.top.equalTo(titleLabel.snp.bottom).offset(66)
+            if UIScreen.main.bounds.height < 670 {
+                $0.top.equalTo(titleLabel.snp.bottom).offset(20)
+                $0.size.equalTo(280)
+            } else {
+                $0.top.equalTo(titleLabel.snp.bottom).offset(64)
+            }
 //            $0.leading.equalToSuperview().offset(35)
 //            $0.bottom.equalToSuperview().offset(-10)
             $0.centerX.equalToSuperview()
