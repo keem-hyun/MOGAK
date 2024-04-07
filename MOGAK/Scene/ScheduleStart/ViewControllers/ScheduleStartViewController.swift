@@ -298,7 +298,7 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
             $0.trailing.leading.equalToSuperview().inset(20)
             $0.height.equalTo(250) // 캘린더뷰의(월)일때의 총 높이
             
-#warning("캘린더 높이 비율로 조정")
+        #warning("캘린더 높이 비율로 조정")
         }
         
         toggleButton.snp.makeConstraints{
@@ -414,6 +414,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     
     //MARK: - 일일 조각 API
     func CheckDailyJogaks(DailyDate: String){
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         LoadingIndicator.showLoading()
         Apinetwork.getCheckDailyJogak(DailyDate: DailyDate) { result in
             switch result {
@@ -528,6 +531,10 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
     //    }
     
     @objc func goStart(_ sender : UIButton){
+        if RegisterUserInfo.shared.loginState == .guest {
+            CommonLoginManage.gotoLoginViewController(self)
+            return
+        }
         let vc = SelectModalartTableView()
         
         let navigationController = UINavigationController(rootViewController: vc)
