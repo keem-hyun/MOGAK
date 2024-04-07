@@ -146,8 +146,9 @@ class ScheduleStartViewController: UIViewController,FSCalendarDelegate,FSCalenda
         self.tableSetting()
         self.tableUI()
         
-        
-        modalartVC.getModalart()
+        if RegisterUserInfo.shared.loginState != .guest {
+            modalartVC.getModalart()
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(self.DissmissModal(_:)), name: selectJogakModal.DidDismissModal, object: nil)
         
     }

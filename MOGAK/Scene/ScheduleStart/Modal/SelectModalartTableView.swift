@@ -87,6 +87,9 @@ class SelectModalartTableView: UIViewController, UITableViewDelegate, UITableVie
     
     //MARK: - 모다라트 리스트 조회
     func getModalart() {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         LoadingIndicator.showLoading()
         Apinetwork.getModalartList { result in
             switch result {
