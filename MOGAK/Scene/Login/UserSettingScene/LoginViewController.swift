@@ -45,6 +45,19 @@ class LoginViewController: UIViewController {
         return button
     }()
     
+    private lazy var guestLoginButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.backgroundColor = DesignSystemColor.white.value
+        button.setTitle("로그인 없이 계속하기", for: .normal)
+        button.setTitleColor(UIColor(hex: "000000"), for: .normal)
+        button.titleLabel?.font = UIFont.pretendard(.medium, size: 18)
+        button.imageView?.tintColor = .white
+        button.layer.borderWidth = 1
+        button.addTarget(self, action: #selector(guestLoginClicked), for: .touchUpInside)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
@@ -102,13 +115,19 @@ class LoginViewController: UIViewController {
     }
     
     private func configureButton() {
-        self.view.addSubviews(appleLoginButton)
+        self.view.addSubviews(appleLoginButton, guestLoginButton)
         
         appleLoginButton.snp.makeConstraints({
-            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-26)
+            $0.bottom.equalTo(self.guestLoginButton.snp.top).offset(-26)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalToSuperview().multipliedBy(0.057)
         })
+        
+        guestLoginButton.snp.makeConstraints { make in
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-26)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalToSuperview().multipliedBy(0.057)
+        }
     }
 
     @objc private func appleLoginClicked() {
@@ -134,4 +153,36 @@ class LoginViewController: UIViewController {
 //        }
 //        .store(in: &cancellables)
     }
+    
+    @objc private func guestLoginClicked() {
+        
+        RegisterUserInfo.shared.loginState = .guest
+    }
 }
+
+
+#if DEBUG
+import SwiftUI
+struct Preview8: UIViewControllerRepresentable {
+    
+    // 여기 ViewController를 변경해주세요
+    func makeUIViewController(context: Context) -> UIViewController {
+        LoginViewController()
+    }
+    
+    func updateUIViewController(_ uiView: UIViewController,context: Context) {
+        // leave this empty
+    }
+}
+
+struct LoginViewController_PreviewProvider: PreviewProvider {
+    static var previews: some View {
+        Group {
+            Preview8()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("Preview")
+        }
+    }
+}
+#endif
+

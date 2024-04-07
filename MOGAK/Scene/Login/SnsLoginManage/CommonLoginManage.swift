@@ -11,7 +11,6 @@ import Alamofire
 class CommonLoginManage: RequestInterceptor {
     //MARK: - Authorization header에 넣어줌
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        print(#fileID, #function, #line, "- adapt함수")
         var urlRequest = urlRequest
         guard let accessToken = UserDefaults.standard.string(forKey: "accessToken") else { return }
         print(#fileID, #function, #line, "- adapt accessToken: \(accessToken)")
@@ -33,7 +32,6 @@ class CommonLoginManage: RequestInterceptor {
                 .responseDecodable(of: RefreshTokenResponse.self) { (response: DataResponse<RefreshTokenResponse, AFError> ) in
                     switch response.result {
                     case .failure(let error):
-                        print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                         completion(.doNotRetry)
                     case .success(let data):
                         UserDefaults.standard.set(data.result?.accessToken, forKey: "accessToken")
@@ -56,8 +54,24 @@ class CommonLoginManage: RequestInterceptor {
             RegisterUserInfo.shared.happendSomeError = true
             completion(.doNotRetryWithError(error))
             UserDefaults.standard.set("", forKey: "refreshToken")
-            RegisterUserInfo.shared.loginState = false
+            RegisterUserInfo.shared.loginState = .logout
         }
             
+    }
+    
+    static func gotoLoginViewController(_ vc: UIViewController) {
+        let gotoLoginAlertAction = UIAlertAction(title: "네", style: .default) { _ in
+            let loginVC = LoginViewController()
+            loginVC.modalPresentationStyle = .overFullScreen
+            vc.present(loginVC, animated: false)
+        }
+        
+        let cancelAlertAction = UIAlertAction(title: "아니요", style: .cancel)
+        
+        let needLoginAlertController = UIAlertController(title: "로그인 필요", message: "해당 기능을 사용하시려면 로그인이 필요합니다. \n로그인 화면으로 이동하시겠습니까?", preferredStyle: .alert)
+        
+        needLoginAlertController.addAction(gotoLoginAlertAction)
+        needLoginAlertController.addAction(cancelAlertAction)
+        vc.present(needLoginAlertController, animated: false)
     }
 }

@@ -22,6 +22,15 @@ struct UserInfo: Codable {
     }
 }
 
+enum LoginStatus {
+    /// 로그인
+    case login
+    /// 로그아웃
+    case logout
+    /// 게스트 로그인 모드
+    case guest
+}
+
 
 struct SignInWithAppleResult {
     let token: String

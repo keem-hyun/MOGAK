@@ -22,7 +22,7 @@ class RegisterUserInfo {
 //    var userRegion : CurrentValueSubject<String?, Never> = CurrentValueSubject("")
 //    var userId: CurrentValueSubject<String?, Never> = CurrentValueSubject("")
 //    var userAccessToken: CurrentValueSubject<String?, Never> = CurrentValueSubject("")
-    @Published var loginState: Bool? = nil
+    @Published var loginState: LoginStatus? = nil
     
     @Published var userIsRegistered: Bool = false
     @Published var someError: String? = nil

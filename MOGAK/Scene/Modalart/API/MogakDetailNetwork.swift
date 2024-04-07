@@ -11,6 +11,9 @@ import Alamofire
 class MogakDetailNetwork: NSObject {
     static let shared = MogakDetailNetwork()
     func getAllMogakDetailJogaks(mogakId: Int, date: String, completionHandler: @escaping(Result<[JogakDetail]?, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         AF.request(MogakDetailRouter.getAllMogakDetailJogaks(mogakId, date), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: JogakDetailResponse.self) { (response: DataResponse<JogakDetailResponse, AFError>) in
@@ -26,6 +29,9 @@ class MogakDetailNetwork: NSObject {
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
     //MARK: - 모각 삭제 요청 API
     func deleteMogak(mogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
 //        AF.request(ModalartRouter.delteModalart(modaratId: mogakId), interceptor: CommonLoginManage())
         AF.request(MogakDetailRouter.deleteMogak(_mogakId: mogakId), interceptor: CommonLoginManage())
         .validate()
@@ -45,6 +51,9 @@ class MogakDetailNetwork: NSObject {
     
     //MARK: - 모다라트 삭제 요청 API
     func deleteJogak(jogakId: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         AF.request(MogakDetailRouter.deleteJogak(jogakId), interceptor: CommonLoginManage())
 //        AF.request(MogakDetailRouter.deleteJogak(jogakId))
         .validate()

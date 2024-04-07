@@ -46,7 +46,6 @@ class MogakCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: .zero)
-        print(#fileID, #function, #line, "- FullMogakCell")
         self.backgroundColor = DesignSystemColor.white.value
         self.layer.cornerRadius = 15
         configureLayout()
@@ -71,9 +70,6 @@ class MogakCell: UICollectionViewCell {
     
     //MARK: - 모각세팅으로 이동하는 부분
     @objc func settingIconTapped() {
-        print(#fileID, #function, #line, "- settingIconTapped⭐️")
-        print(#fileID, #function, #line, "- mogakDetailData: \(self.mogakCellData)")
-
         delegate?.cellButtonTapped(mogakData: self.mogakCellData)
     }
 }

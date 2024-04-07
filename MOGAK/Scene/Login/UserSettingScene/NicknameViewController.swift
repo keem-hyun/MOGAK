@@ -333,6 +333,10 @@ extension NicknameViewController: UIImagePickerControllerDelegate, UINavigationC
 extension NicknameViewController {
     //MARK: - 닉네임 타당성 검증 요청
     func validateNickname(nickName: String) {
+        if nickName.count == 1 {
+            self.makeNicknameErrorAlert(errorMessage: "2글자 이상 입력해주세요")
+            return
+        }
         LoadingIndicator.showLoading()
         let nicknameRequest = NicknameChangeRequest(nickname: nickName)
         AF.request(UserRouter.nicknameVerify(nickname: nicknameRequest))
@@ -352,16 +356,24 @@ extension NicknameViewController {
                     print(#fileID, #function, #line, "- error: \(error)")
                     let decoder = JSONDecoder()
                     let decodeData = try? decoder.decode(ChangeErrorResponse.self, from: response.data ?? Data())
-                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: decodeData?.message, preferredStyle: .alert)
-                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-                    self.present(nicknameErrorAlert, animated: true)
+                    self.makeNicknameErrorAlert(errorMessage: decodeData?.message)
                 }
             }
     }
     
+    func makeNicknameErrorAlert(errorMessage: String?) {
+        let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+        let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: errorMessage, preferredStyle: .alert)
+        nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+        self.present(nicknameErrorAlert, animated: true)
+    }
+    
     //MARK: - 닉네임 변경
     func nicknameChange(nickname: String) {
+        if nickname.count == 1 {
+            self.makeNicknameErrorAlert(errorMessage: "2글자 이상 입력해주세요")
+            return
+        }
         LoadingIndicator.showLoading()
         UserNetwork.shared.nicknameChange(nickname) { result in
             LoadingIndicator.hideLoading()
@@ -374,22 +386,25 @@ extension NicknameViewController {
                 }
             case .failure(let failure):
                 if failure as? APIError == APIError.invalidNickname {
-                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요", preferredStyle: .alert)
-                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-                    self.present(nicknameErrorAlert, animated: true)
+                    self.makeNicknameErrorAlert(errorMessage: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요")
+//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "닉네임 형식이 올바르지 않습니다! \n닉네임 조합을 다시 확인해주세요", preferredStyle: .alert)
+//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+//                    self.present(nicknameErrorAlert, animated: true)
                 } else if failure as? APIError == APIError.NotExistUser {
-                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요", preferredStyle: .alert)
-                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-                    self.present(nicknameErrorAlert, animated: true)
+                    self.makeNicknameErrorAlert(errorMessage: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요")
+//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "존재하지 않는 유저입니다! \n모각 오픈채팅으로 문의해주세요", preferredStyle: .alert)
+//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+//                    self.present(nicknameErrorAlert, animated: true)
                 }
                 else {
                     print(#fileID, #function, #line, "- failure: \(failure)")
-                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
-                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "\(failure)", preferredStyle: .alert)
-                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
-                    self.present(nicknameErrorAlert, animated: true)
+                    self.makeNicknameErrorAlert(errorMessage: failure.localizedDescription)
+//                    let nicknameErrorAlertAction = UIAlertAction(title: "확인", style: .default)
+//                    let nicknameErrorAlert = UIAlertController(title: "닉네임 오류", message: "\(failure)", preferredStyle: .alert)
+//                    nicknameErrorAlert.addAction(nicknameErrorAlertAction)
+//                    self.present(nicknameErrorAlert, animated: true)
                 }
                 
             }

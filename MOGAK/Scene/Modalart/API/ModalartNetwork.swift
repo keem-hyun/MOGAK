@@ -12,6 +12,9 @@ class ModalartNetwork {
     static let shared = ModalartNetwork()
     //MARK: - 모다라트 상세 내용 API
     func getDetailModalartInfo(modalartId: Int = 4, completionHandler: @escaping (Result<ModalartInfo?, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         
         AF.request(ModalartRouter.detailModalart(modaratId: modalartId), interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.detailModalart(modaratId: modalartId))
@@ -29,6 +32,10 @@ class ModalartNetwork {
     }
     
     func getDetailMogakData(modalartId: Int, completionHandler: @escaping((Result<DetailMogakResponse?, Error>) -> Void)) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
+        
         AF.request(ModalartRouter.getDetailMogakData(modaratId: modalartId), interceptor: CommonLoginManage())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: DetailMogakResponse.self) { (response: DataResponse<DetailMogakResponse, AFError>) in
@@ -43,6 +50,9 @@ class ModalartNetwork {
     
     //MARK: - 모다라트 리스트 조회 API
     func getModalartList( completionHandler: @escaping (Result<[ModalartList]?, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         AF.request(ModalartRouter.getModalartList, interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.getModalartList)
             .validate(statusCode: 200..<300)
@@ -59,6 +69,9 @@ class ModalartNetwork {
     
     //MARK: - 모다라트 생성 요청 API
     func createDetailModalart(data: ModalartMainData, completionHandler: @escaping (Result<ModalartMainData, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         
         AF.request(ModalartRouter.createModalrt(data: data), interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.createModalrt(data: data))
@@ -78,6 +91,10 @@ class ModalartNetwork {
     let serializer = DataResponseSerializer(emptyResponseCodes: [])
     //MARK: - 모다라트 삭제 요청 API
     func deleteModalart(id: Int, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
+        
         print(#fileID, #function, #line, "- id:\(id)")
         AF.request(ModalartRouter.delteModalart(modaratId: id), interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.delteModalart(modaratId: id))
@@ -98,6 +115,9 @@ class ModalartNetwork {
     
     
     func editModalart(data: ModalartMainData, completionHandler: @escaping(Result<ModalartMainData, Error>) -> Void) {
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
         AF.request(ModalartRouter.editModalart(data: data), interceptor: CommonLoginManage())
 //        AF.request(ModalartRouter.editModalart(data: data))
             .responseDecodable(of: CreateAndEditModalartResponse.self) { (response: DataResponse<CreateAndEditModalartResponse, AFError>) in

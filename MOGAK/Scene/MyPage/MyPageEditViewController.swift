@@ -158,7 +158,7 @@ class MyPageEditViewController: UIViewController {
             switch result {
             case .success:
                 let logoutAlertAction = UIAlertAction(title: "확인", style: .default) { _ in
-                    RegisterUserInfo.shared.loginState = false
+                    RegisterUserInfo.shared.loginState = .logout
                 }
                 let logoutAlert = UIAlertController(title: "로그아웃", message: "로그아웃되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)
                 logoutAlert.addAction(logoutAlertAction)
@@ -180,7 +180,7 @@ class MyPageEditViewController: UIViewController {
                     UserDefaults.standard.removeObject(forKey: "isFirstTime")
                     UserDefaults.standard.removeObject(forKey: "refreshToken")
                     RegisterUserInfo.shared.userAccessToken = ""
-                    RegisterUserInfo.shared.loginState = false
+                    RegisterUserInfo.shared.loginState = .logout
                     RegisterUserInfo.shared.nickName = ""
                 }
                 let withdrawAlert = UIAlertController(title: "회원탈퇴", message: "회원탈퇴되어 로그인페이지로 이동됩니다.", preferredStyle: .alert)

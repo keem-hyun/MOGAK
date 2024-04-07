@@ -100,8 +100,6 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                         case .failure(let error):
                             print(#fileID, #function, #line, "- error: \(error.localizedDescription)")
                         case .success(let data):
-                            print(#fileID, #function, #line, "- sucess")
-                            print(#fileID, #function, #line, "- data: \(data)")
                             if let dataResult = data.result {
                                 print(#fileID, #function, #line, "- accessToken: \(dataResult.tokens.accessToken)")
                                 UserDefaults.standard.set(dataResult.tokens.accessToken, forKey: "accessToken")
@@ -115,7 +113,7 @@ extension AppleLoginManage: ASAuthorizationControllerDelegate {
                             let userEmail = appleIDCredential.email ?? "이메일 제공안함"
 //                             있는지 확인
                             self.registerUserInfo.userEmail = userEmail
-                            self.registerUserInfo.loginState = true
+                            self.registerUserInfo.loginState = .login
                         }
                     }
 

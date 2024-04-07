@@ -28,7 +28,7 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     }()
     
     private let profileImage = UIImageView().then {
-        $0.image = UIImage(named: "default")
+        $0.image = UIImage(named: "setProfile")
 //        $0.layer.borderWidth = 1
         $0.layer.cornerRadius = 35 
         $0.clipsToBounds = true
@@ -37,13 +37,22 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     }
     
     private let name = UILabel().then {
-        $0.text = RegisterUserInfo.shared.nickName ?? "김동동"
+        if RegisterUserInfo.shared.loginState == .guest {
+            $0.text = "로그인이 필요합니다."
+        } else {
+            $0.text = RegisterUserInfo.shared.nickName ?? "홍길동"
+        }
         $0.font = UIFont.pretendard(.bold, size: 22)
         $0.textColor = UIColor.white
     }
     
     private let job = UILabel().then {
-        $0.text = RegisterUserInfo.shared.userJob ?? "서비스기획자/PM"
+        if RegisterUserInfo.shared.loginState == .guest {
+            $0.text = "환영합니다!"
+        } else {
+            $0.text = RegisterUserInfo.shared.userJob ?? "서비스기획자/PM"
+        }
+        
         $0.font = UIFont.pretendard(.medium, size: 12)
         $0.textColor = UIColor.white
     }
@@ -205,6 +214,10 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     //MARK: - 유저 프로필 세팅
     func userProfileTextSetting() {
         //유저의 프로필 정보 받아오기
+        if RegisterUserInfo.shared.loginState == .guest {
+            return
+        }
+        
         UserNetwork.shared.getUserData { result in
             switch result {
             case .success(let success):
@@ -318,8 +331,13 @@ class MyPageViewController: UIViewController, WKUIDelegate, UIGestureRecognizerD
     
     //MARK: - 프로필 수정 뷰로 이동
     @objc private func goToEditPage() {
-        let mypageVC = MyPageEditViewController()
-        self.navigationController?.pushViewController(mypageVC, animated: true)
+        if RegisterUserInfo.shared.loginState == .guest {
+            CommonLoginManage.gotoLoginViewController(self)
+            return
+        } else {
+            let mypageVC = MyPageEditViewController()
+            self.navigationController?.pushViewController(mypageVC, animated: true)
+        }
     }
     
     @objc private func profileShareButtonTapped() {

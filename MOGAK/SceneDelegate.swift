@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print(#fileID, #function, #line, "- sceneDelegate refreshToken: \(refreshToken)")
             if let loginState = loginState {
                 //로그인이 되어있다면
-                if loginState {
+                if loginState == .login {
                     if RegisterUserInfo.shared.userIsRegistered {
                         //이미 등록한 유저
                         self.setRootViewContrller(scene, type: .main)
@@ -30,7 +30,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         //아직 등록하지 않은 유저
                         self.setRootViewContrller(scene, type: .termAgree)
                     }
-                }else {
+                }
+                // 게스트 로그인
+                else if loginState == .guest {
+                    self.setRootViewContrller(scene, type: .main)
+                }
+                // 로그아웃
+                else {
                     //처음 등록한 유저라면
                     if Storage.isFirstTime() {
                         self.setRootViewContrller(scene, type: .onBoarding)
@@ -54,8 +60,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
                 else {
                     if RegisterUserInfo.shared.happendSomeError {
-                        var alertController = UIAlertController(title: "에러", message: RegisterUserInfo.shared.someError, preferredStyle: .alert)
-                        var okAction = UIAlertAction(title: "확인", style: .default) { _ in
+                        let alertController = UIAlertController(title: "에러", message: RegisterUserInfo.shared.someError, preferredStyle: .alert)
+                        let okAction = UIAlertAction(title: "확인", style: .default) { _ in
                             RegisterUserInfo.shared.happendSomeError = false
                             RegisterUserInfo.shared.someError = nil
                         }
