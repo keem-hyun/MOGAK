@@ -652,6 +652,17 @@ class JogakEditViewController: UIViewController {
     }
     
     @objc private func completeButtonTapped() {
+        if !self.routineRepeatList.isEmpty {
+            if self.endTextField.text == "" {
+                let needEndDateAlertAction = UIAlertAction(title: "확인", style: .default)
+                let needEndDateAlert = UIAlertController(title: "종료날짜 오류", message: "루틴이 지정된 경우 \n종류 날짜는 필수로 지정되어야 해요!", preferredStyle: .alert)
+                needEndDateAlert.addAction(needEndDateAlertAction)
+                self.present(needEndDateAlert, animated: true)
+                return
+            }
+            
+        }
+        
         editJogak()
         print("")
     }
@@ -1034,9 +1045,7 @@ extension JogakEditViewController {
     
     // 조각 수정
     func editJogak() {
-        if needEndDate() {
-            return
-        }
+        
         LoadingIndicator.showLoading()
         self.view.isUserInteractionEnabled = false
         let jogakId = currentJogakId
